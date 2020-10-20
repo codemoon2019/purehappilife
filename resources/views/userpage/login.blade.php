@@ -61,5 +61,4 @@
             </div>
         </div>
     </div>
-    <!-- my-account end -->
 @include('incs.footer')
