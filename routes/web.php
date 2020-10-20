@@ -17,3 +17,4 @@ Auth::routes();
 Route::get('/', [App\Http\Controllers\Home\HomeController::class, 'index'])->name('home');
 Route::get('/login', [App\Http\Controllers\Home\HomeController::class, 'login'])->name('login');
 Route::get('/register', [App\Http\Controllers\Home\HomeController::class, 'register'])->name('register');
+Route::get('/cart', [App\Http\Controllers\Home\HomeController::class, 'cart'])->name('cart');

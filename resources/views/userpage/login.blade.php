@@ -19,7 +19,7 @@
    <div class="my-account pb-6rem">
         <div class="container text-center">
             <div class="row">
-                <div class="col-8 offset-md-2">
+                <div class="col-lg-8 col-md-12 col-sm-12 offset-lg-2">
                     <h3 class="title"> Log in to your account</h3>
                     <form class="log-in-form">
                         <div class="form-group row">
@@ -37,9 +37,7 @@
                                         <button type="button" class="input-group-text btn-dark3 show-password">show</button>
                                     </div>
                                 </div>
-
                             </div>
-
                         </div>
                         <div class="form-group row pb-3 text-center">
                             <div class="col-md-6 offset-md-3">
@@ -64,5 +62,4 @@
         </div>
     </div>
     <!-- my-account end -->
-
 @include('incs.footer')

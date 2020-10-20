@@ -7,21 +7,27 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function index(){
+    public static function index(){
 
         return view('index');
 
     }
 
-    public function login(){
+    public static function login(){
 
         return view('userpage.login');
 
     }
 
-    public function register(){
+    public static function register(){
 
         return view('userpage.register');
+
+    }
+
+    public static function cart(){
+
+        return view('userpage.cart');
 
     }
 

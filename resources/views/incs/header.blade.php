@@ -110,7 +110,7 @@
                         </li>
                      </ul>
                      <div class="cart-block position-relative">
-                        <a href="cart.html">
+                        <a href="/cart">
                            <span class="position-relative">
                               <i class="ion-bag"></i>
                               <span class="badge badge-light cb1">3</span>
@@ -245,7 +245,7 @@
                      <li><a href="contact.html">contact Us</a></li>
                   </ul>
                   <div class="cart-block position-relative text-right ml-auto">
-                     <a href="cart.html">
+                     <a href="/cart">
                         <span class="position-relative">
                            <i class="ion-bag"></i>
                            <span class="badge badge-light cb1">1</span>
