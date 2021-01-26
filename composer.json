@@ -9,15 +9,20 @@
     "license": "MIT",
     "require": {
         "php": "^7.3",
+        "adyen/php-api-library": "^8.0",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
-        "guzzlehttp/guzzle": "^7.0.1",
+        "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^8.0",
-        "laravel/tinker": "^2.0"
+        "laravel/passport": "^10.0",
+        "laravel/tinker": "^2.0",
+        "pusher/pusher-php-server": "^4.1",
+        "revolution/laravel-google-sheets": "^5.4"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",
         "fzaninotto/faker": "^1.9.1",
+        "laravel/ui": "^3.0",
         "mockery/mockery": "^1.3.1",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9.3"

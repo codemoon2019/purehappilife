@@ -1,0 +1,8 @@
+{
+    "/js/app.js": "/js/app.js",
+    "/css/app.css": "/css/app.css",
+    "/js/user/login.js": "/js/user/login.js",
+    "/js/user/profile.js": "/js/user/profile.js",
+    "/js/user/pure.js": "/js/user/pure.js",
+    "/js/user/registeruser.js": "/js/user/registeruser.js"
+}
