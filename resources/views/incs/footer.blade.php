@@ -10,11 +10,17 @@
                 </div>
                 <div class="col-12 col-md-6 col-lg-auto mb-3">
                 <div class="nletter-form">
-                    <form class="form-inline position-relative"
-                        action="http://devitems.us11.list-manage.com/subscribe/post?u=6bbb9b6f5827bd842d9640c82&amp;id=05d85f18ef"
+                    <form id="signup-email" class="form-inline position-relative"
+
+                        @if(auth::check())
+                           action="/home/signup-email"
+                        @else
+                           action="/signup-email"
+                        @endif
+
                         target="_blank" method="post">
-                        <input class="form-control" type="text" placeholder="Your email address">
-                        <button class="btn btn-dark nletter-btn" type="submit">Sign up</button>
+                        <input class="form-control" type="email" id="txtSignupEmail" name="txtSignupEmail"  placeholder="Your email address" required>
+                        <button class="btn btn-dark nletter-btn" type="submit">Subscribe</button>
                     </form>
                 </div>
                 </div>
@@ -23,14 +29,8 @@
                     <ul class="d-flex">
                         <li><a href="https://www.facebook.com/" target="_blank"><span
                                 class="ion-social-facebook"></span></a></li>
-                        <li><a href="https://twitter.com/" target="_blank"><span class="ion-social-twitter"></span></a>
-                        </li>
                         <li><a href="https://www.youtube.com/" target="_blank"><span class="ion-social-youtube"></span></a>
                         </li>
-                        <li><a href="https://plus.google.com/" target="_blank"><span class="ion-social-google"></span></a>
-                        </li>
-                        <li class="mr-0"><a href="https://www.instagram.com/" target="_blank"><span
-                                class="ion-social-instagram"></span></a></li>
                     </ul>
                 </div>
                 </div>
@@ -50,7 +50,7 @@
                            <i class="ion-ios-location-outline"></i>
                         </span>
                         <div class="media-body">
-                           <h4 class="title">4710-4890 Breckinridge St, USK</h4>
+                           <h4 class="title">Bario San Roque, Tala Caloocan City</h4>
                            <p class="text">Contact Info!</p>
                         </div>
                      </div>
@@ -63,7 +63,7 @@
                            <i class="ion-ios-email-outline"></i>
                         </span>
                         <div class="media-body">
-                           <h4 class="title"><a href="mailto:HasThemes.com">demo@hasthemes</a></h4>
+                           <h4 class="title"><a href="mailto:HasThemes.com">cs@purehappilife.ph</a></h4>
                            <p class="text">Orders Support!</p>
                         </div>
                      </div>
@@ -76,7 +76,7 @@
                            <i class="ion-ios-telephone-outline"></i>
                         </span>
                         <div class="media-body">
-                           <h4 class="title"><a href="tel:+1(123)8889999">+1 (123) 888 9999</a></h4>
+                           <h4 class="title"><a href="tel:+1(123)8889999">(+639) 23 447 6552</a></h4>
                            <p class="text">Free support line!</p>
                         </div>
                      </div>
@@ -97,15 +97,12 @@
                         </div>
                      </div>
                      <ul class="footer-menu">
-                        <li><a href="#">Delivery</a></li>
                         <li><a href="about-us.html">About us</a></li>
-                        <li><a href="#">Secure payment</a></li>
                         <li><a href="contact.html">Contact us</a></li>
-                        <li><a href="#">Sitemap</a></li>
-                        <li><a href="#">Stores</a></li>
                      </ul>
                   </div>
                </div>
+               
                <div class="col-12 col-sm-6 col-lg-3 mb-5">
                   <div class="footer-widget">
                      <div class="border-bottom cbb1 mb-3rem">
@@ -114,16 +111,11 @@
                         </div>
                      </div>
                      <ul class="footer-menu">
-                        <li><a href="#">Legal Notice</a></li>
-                        <li><a href="#">Prices drop</a></li>
-                        <li><a href="#">New products</a></li>
-                        <li><a href="#">Best sales</a></li>
                         <li><a href="login.html">Login</a></li>
                         <li><a href="myaccount.html">My account</a></li>
                      </ul>
                   </div>
                </div>
-
 
                <div class="col-12 col-sm-6 col-lg-3 mb-5">
                   <div class="footer-widget">
@@ -135,12 +127,8 @@
                      <ul class="footer-menu">
                         <li><a href="#">Personal info</a></li>
                         <li><a href="#">Orders</a></li>
-                        <li><a href="#">Credit slips</a></li>
-                        <li><a href="#">Addresses</a></li>
                      </ul>
                   </div>
-
-
                </div>
 
                <div class="col-12 col-sm-6 col-lg-3 mb-5">
@@ -152,14 +140,11 @@
                      </div>
                      <ul class="footer-menu">
                         <li><a href="#">Terms &amp; Conditions</a></li>
-                        <li><a href="#">Exchanges</a></li>
                         <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Help</a></li>
-                        <li><a href="#">Customer Service</a></li>
-                        <li><a href="#">Support</a></li>
                      </ul>
                   </div>
                </div>
+
             </div>
          </div>
       </div>
@@ -173,9 +158,6 @@
                   </div>
                </div>
                <div class="col-12 col-md-6">
-                  <div class="text-center text-md-right">
-                     <img src="assets/img/payment/1.png" alt="img">
-                  </div>
                </div>
             </div>
          </div>
@@ -184,3 +166,55 @@
    @include('incs.footer_file')
 </body>
 </html>
+
+<script>
+   $('#signup-email').submit(function(e){
+
+      e.preventDefault();
+      var formData = new FormData(this);
+      var form = $(this);
+      var url = form.attr('action');
+      $.ajaxSetup({
+                headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        $.ajax({
+                type: "POST",
+                url: url,
+                data: formData, // serializes the form's elements.\
+                cache:false,
+                contentType: false,
+                processData: false,
+                beforeSend:function(){
+
+                    Swal.fire({
+                        html: 'Please wait while registering your email ...',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        willOpen: () => {
+                          Swal.showLoading()
+                        },
+                    })
+
+                },
+                success:function(data)
+                {
+                  if(data.message == 'success'){
+                     Swal.fire({
+                        icon: 'success',
+                        text: 'Subscribed successfully!',
+                    })
+                  }else{
+                     Swal.fire({
+                        icon: 'warning',
+                        text: 'You are already a subscriber!',
+                    })
+                  }
+
+                }
+              });
+
+
+   });
+</script>

@@ -6,6 +6,8 @@
        ------------------------------ */
     const $window = $(window),
         $body = $("body");
+    
+    var submit = false;
 
     /*--------------------------
       Sticky Menu
@@ -526,6 +528,7 @@
         fade: true,
         asNavFor: ".product-sync-nav",
     });
+    
     $(".product-sync-nav").slick({
         dots: false,
         arrows: false,
@@ -632,5 +635,278 @@
         activeOverlay: false, // Set CSS color to display scrollUp active point, e.g '#00FFFF'
         zIndex: 214 // Z-Index for the overlay
     });
+
+    $(document).on('click', '.btn-add-to-wishlist-disabled, .btn-add-to-cart-disabled', function(e){
+        e.preventDefault();
+        
+        var dataID = $(this).attr("data-id");
+        var actionType = $(this).attr("action-type");
+        $.ajaxSetup({
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: $('meta[name="app_url"]').attr('content')+"/shop/add",
+            method:'POST',
+            data:{
+                'dataID': dataID,
+                'actionType': actionType 
+            },
+            beforeSend:function(){
+                
+                Swal.fire({
+                    html: 'Please wait while creating new product ...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                      Swal.showLoading()
+                    },
+                });
+
+            },
+            success:function(data){
+
+                $('#total-wishlist').text('('+data.total_wishlist_item+')');
+                $('.cart-total-price').text('₱ '+data.total_cart_price+'');
+                $('.total-cart-item').text(data.total_cart_item);
+
+                Swal.fire({
+                    icon: data.success == true ? 'success' : 'warning',
+                    text: data.messages,
+                });
+                
+                getCartItem()
+
+            }
+        });
+
+    });
+
+    getCartItem()
+
+    $(document).on('click', '.btn-add-to-cart', function(){
+
+        $.ajaxSetup({
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: $('meta[name="app_url"]').attr('content')+"/home/shop/add-single-product",
+            method:'POST',
+            data:{
+                'dataID': this.id,
+                'quantity': $('#txtQuantity').val(),
+            },
+            beforeSend:function(){
+                
+                Swal.fire({
+                    html: 'Please wait while adding to cart ...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                      Swal.showLoading()
+                    },
+                });
+
+            },
+            success:function(data){
+
+                $('#total-wishlist').text('('+data.total_wishlist_item+')');
+                $('.cart-total-price').text('₱ '+data.total_cart_price+'');
+                $('.total-cart-item').text(data.total_cart_item);
+
+                Swal.fire({
+                    icon: data.success == true ? 'success' : 'warning',
+                    text: data.messages,
+                });
+                
+                getCartItem()
+
+            }
+        });
+    
+
+    })
+    
+    $(document).on('click', '.btn-add', function(e){
+
+        e.preventDefault();
+        var dataID = $(this).attr("data-id");
+        var actionType = $(this).attr("action-type");
+        $.ajaxSetup({
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: $('meta[name="app_url"]').attr('content')+"/home/shop/add",
+            method:'POST',
+            data:{
+                'dataID': dataID,
+                'actionType': actionType 
+            },
+            beforeSend:function(){
+                
+                Swal.fire({
+                    html: 'Please wait while creating new product ...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                      Swal.showLoading()
+                    },
+                });
+
+            },
+            success:function(data){
+
+                $('#total-wishlist').text('('+data.total_wishlist_item+')');
+                $('.cart-total-price').text('₱ '+data.total_cart_price+'');
+                $('.total-cart-item').text(data.total_cart_item);
+
+                Swal.fire({
+                    icon: data.success == true ? 'success' : 'warning',
+                    text: data.messages,
+                });
+                
+                getCartItem()
+
+            }
+        });
+    
+    });
+
+    $(document).on('keyup change', '.validate-field', function(){
+        if(submit != false){
+            validateFields();
+        }
+    })
+
+    $(document).on('click', '.remove-cart-item', function(){
+        $('.cart-item-'+this.id).fadeOut('slow');
+        if($('meta[name="site_visitor_number"]').attr('content') != undefined){
+            $.ajax({
+                url:'/home/shop/remove-cart-item',
+                method:'POST',
+                data:{
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    id: this.id
+                },
+                success:function(data){
+                    $('.cart-total-price').text('₱ '+data.total_cart_price+'');
+                    $('.total-cart-item').text(data.total_cart_item);
+                    if(data.success == false){
+                        Swal.fire({
+                            icon: 'warning',
+                            text: data.messages,
+                        });
+                    }
+                },
+            })
+        }else{
+            $.ajax({
+                url:'/shop/remove-cart-item',
+                method:'POST',
+                data:{
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    id: this.id
+                },
+                success:function(data){
+                    $('.cart-total-price').text('₱ '+data.total_cart_price+'');
+                    $('.total-cart-item').text(data.total_cart_item);
+                    if(data.success == false){
+                        Swal.fire({
+                            icon: 'warning',
+                            text: data.messages,
+                        });
+                    }
+                },
+            })
+        }
+
+    });
+
+    $(document).on('click', '.delete-wishlist', function(e){
+        e.preventDefault();
+        $('.wishlist-item-'+this.id).fadeOut('slow');
+        $.ajax({
+            url:'/home/shop/remove-wishlist-item',
+            method:'POST',
+            data:{
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                id: this.id
+            },
+            success:function(data){
+                    $('#total-wishlist').text('('+data.total_wishlist_item+')');
+                    Swal.fire({
+                        icon: data.success == true ? 'success' : 'warning',
+                        text: data.messages,
+                    });
+
+                    if(data.total_wishlist_item == 0){
+                        location.reload();
+                    }
+            },
+        })
+    });
+    
+    
+    function validateFields(){
+    
+        for(var i = 0, countError = 0, inputFieldsCount = $('.validate-field').length; i < inputFieldsCount; i++){
+            
+            var errorMessage = document.getElementsByClassName("validate-field")[i].getAttribute("error-message");
+            if(document.getElementsByClassName("validate-field")[i].value == ""){
+                countError += 1;
+                document.getElementsByClassName("validate-field")[i].style.border = "1px solid red";
+                document.getElementsByClassName("error-message")[i].textContent = errorMessage;
+            }else{
+                document.getElementsByClassName("validate-field")[i].style.border = "1px solid #e3e3e3";
+                document.getElementsByClassName("error-message")[i].textContent = "";
+            }
+            
+        }
+    
+        return countError;
+    
+    }
+    
+    function getCartItem(){
+     
+        if($('meta[name="site_visitor_number"]').attr('content') != undefined){
+            $.ajax({
+                url: $('meta[name="app_url"]').attr('content')+"/home/shop/cart-item",
+                method:'GET',
+                success:function(data){
+                    $('.cart-item-list').html(data);
+                }
+            })
+        }else{
+            $.ajax({
+                url: $('meta[name="app_url"]').attr('content')+"/shop/cart-item",
+                method:'GET',
+                success:function(data){
+                    $('.cart-item-list').html(data);
+                }
+            })
+        }
+     
+
+    }
+
+    function randomInteger(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    var randomNumber = randomInteger(1, 99999999);
+
+    if(localStorage.lastname == undefined){
+        localStorage.guestid = randomNumber;
+    }else{
+        console.log(localStorage.lastname)
+        localStorage.removeItem("guestid");
+    }
+
 
 })(jQuery);
