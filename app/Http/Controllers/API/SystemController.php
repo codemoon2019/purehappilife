@@ -37,6 +37,31 @@ class SystemController extends Controller
 
     }
 
+        /**
+    * Create website blogs.
+    *
+    * @param  Request  $request
+    * @return Response
+    */
+    public function updateWebsiteBlog(Request $request){
+ 
+        $blog = WebsiteBlog::find($request->id);
+        $blog->status = $request->status;
+        $blog->save();
+
+        if($blog->save()){
+            return response()->json([
+                'internalMessage' => 'Blog created successfully!'
+            ], 200);
+        }else{
+            return response()->json([
+                'internalMessage' => 'Something went wrong!'
+            ], 200);
+        }
+
+    }
+
+
     /**
     * Retrieve website blog list.
     *
@@ -91,6 +116,13 @@ class SystemController extends Controller
                 $nestedData['id'] = $blogs->id;
                 $nestedData['subject'] = $blogs->subject;
                 $nestedData['description'] = $blogs->description;
+                $nestedData['status'] = $blogs->status == 0 ? 'Unpublish' : 'Publish';
+                if($blogs->status == 0){
+                    $nestedData['action'] = '<button class="btn-update-blog" id="'.$blogs->id.'" data-value="1">Publish</button>';
+                }else{
+                    $nestedData['action'] = '<button class="btn-update-blog" id="'.$blogs->id.'" data-value="0">Unpublish</button>';
+                }
+                
                 $data[] = $nestedData;  
 
             }

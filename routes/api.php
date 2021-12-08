@@ -46,5 +46,7 @@ Route::get('/validate-payment', [App\Http\Controllers\Home\ProductController::cl
     Route::get('notification-list', [App\Http\Controllers\NotificationController::class, 'notificationList']);
     Route::get('notification-header-list', [App\Http\Controllers\NotificationController::class, 'notificationHeaderList']);
     Route::post('update-multiple-order-status', [App\Http\Controllers\API\ProductController::class, 'updateMultipleOrderStatus']);
+    Route::post('update-website-blog', [App\Http\Controllers\API\SystemController::class, 'updateWebsiteBlog']);
+    
 
 //});
