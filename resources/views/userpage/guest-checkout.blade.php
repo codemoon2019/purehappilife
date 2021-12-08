@@ -6,6 +6,14 @@
 <section class="check-out-section pt-6rem pb-5">
         <div class="container">
             <div class="row">
+                <div class="col-lg-12" style="margin-bottom:10px;">
+                    <div class="card">
+                        <div class="card-body">
+                            <strong>Note:</strong> Your data are stored in cookies so all the data are not permanently stored in our database. All of the placed order by guest are can monitored via email on their registered email upon filling up all the fields required in checkout orders.
+                            If you want to monitored your orders by using the Cartsy Gallery account you can register <a href="/register" style="color:skyblue;">here.</a>
+                        </div>
+                    </div>
+                </div>
                 <div class="col-lg-8 mb-5">
                     <div id="accordion">
                         <div class="card">
@@ -27,7 +35,6 @@
                                     <th class="text-center" scope="col">Product Name</th>
                                     <th class="text-center" scope="col">Qty</th>
                                     <th class="text-center" scope="col">Price</th>
-                                    <th class="text-center" scope="col">action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,9 +62,6 @@
                                             ₱ {{ number_format($cartItem->total_price) }}
                                         </span></td>
 
-                                        <td class="text-center">
-                                            <a href="#"> <span class="trash"><i class="fas fa-trash-alt"></i> </span></a>
-                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -92,7 +96,11 @@
                                                    <div class="form-group row">
                                                         <label class="col-md-3">First Name</label>
                                                         <div class="col-md-6">
-                                                            <input class="form-control validate-field" error-message="Firstname is required"  id="txtFirstName" type="text" required="">
+                                                            <input class="form-control validate-field"
+                                                             @if(isset($guestInfo->first_name))
+                                                                value="{{ $guestInfo->first_name }}"
+                                                             @endif
+                                                             error-message="Firstname is required"  id="txtFirstName" type="text" required="">
                                                              <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
@@ -100,7 +108,11 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">Last Name</label>
                                                         <div class="col-md-6">
-                                                            <input class="form-control validate-field" error-message="Lastname is required"  id="txtLastName" type="text" required="">
+                                                             <input class="form-control validate-field"
+                                                             @if(isset($guestInfo->last_name))
+                                                                value="{{ $guestInfo->last_name }}"
+                                                             @endif
+                                                             error-message="Lastname is required"  id="txtLastName" type="text" required="">
                                                              <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
@@ -108,7 +120,11 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">Middle Name</label>
                                                         <div class="col-md-6">
-                                                            <input class="form-control validate-field" error-message="Middlename is required"  id="txtMiddleName" type="text" required="">
+                                                             <input class="form-control validate-field" 
+                                                             @if(isset($guestInfo->middle_name))
+                                                                value="{{ $guestInfo->middle_name }}"
+                                                             @endif
+                                                             error-message="Middlename is required"  id="txtMiddleName" type="text" required="">
                                                              <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
@@ -116,7 +132,11 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">Email</label>
                                                         <div class="col-md-6">
-                                                            <input class="form-control validate-field" error-message="Email is required"  id="txtEmail" type="text" required="">
+                                                             <input class="form-control validate-field"
+                                                             @if(isset($guestInfo->first_name))
+                                                                value="{{ $guestInfo->email }}"
+                                                             @endif
+                                                             error-message="Email is required"  id="txtEmail" type="text" required="">
                                                              <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
@@ -124,7 +144,11 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">Mobile</label>
                                                         <div class="col-md-6">
-                                                            <input class="form-control" id="txtMobile" type="text" >
+                                                            <input class="form-control"
+                                                            @if(isset($guestInfo->mobile))
+                                                                value="{{ $guestInfo->mobile }}"
+                                                            @endif
+                                                            id="txtMobile" type="text" >
                                                         </div>
                                                     </div>
 
@@ -138,7 +162,7 @@
                             </div>
 
 
-                        <div class="card">
+                            <div class="card">
                                 <div class="card-header" id="headingTwo">
                                     <h5 class="mb-0">
                                         <button class="btn btn-link collapsed" data-toggle="collapse"
@@ -162,14 +186,22 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">Address</label>
                                                         <div class="col-md-6">
-                                                            <input class="form-control validate-field" error-message="Address is required"  id="txtAddress1" type="text" required="">
+                                                            <input class="form-control validate-field"
+                                                            @if(isset($guestAddress->address))
+                                                                value="{{ $guestAddress->address }}"
+                                                            @endif
+                                                            error-message="Address is required"  id="txtAddress1" type="text" required="">
                                                             <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-3">Address Complement</label>
                                                         <div class="col-md-6">
-                                                            <input class="form-control" id="txtAddress2" type="text" required="">
+                                                            <input class="form-control"
+                                                            @if(isset($guestAddress->address_complement))
+                                                                value="{{ $guestAddress->address_complement }}"
+                                                            @endif
+                                                            id="txtAddress2" type="text" required="">
                                                         </div>
                                                         <div class="col-md-3"> <span class="optional">
                                                                 Optional
@@ -178,7 +210,11 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">City</label>
                                                         <div class="col-md-6">
-                                                            <input class="form-control validate-field" error-message="City is required"
+                                                            <input class="form-control validate-field"
+                                                            @if(isset($guestAddress->city))
+                                                                value="{{ $guestAddress->city }}"
+                                                            @endif
+                                                            error-message="City is required"
                                                          
                                                             id="txtCity" type="text" required="">
                                                             <span class="error-message text-center" style="color:red;"></span>
@@ -187,16 +223,12 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">State</label>
                                                         <div class="col-md-6">
-                                                            <select class="form-control validate-field" id="txtState" error-message="State is required">
-                                                           
-                                                                <option value="">-- please choose --</option>
-                                                           
-                                                                <option value="AA">AA</option>
-                                                                <option value="AE">AE</option>
-                                                                <option value="AP">AP</option>
-                                                                <option value="Alabama">Alabama</option>
-                                                                <option value="Alaska">Alaska</option>
-                                                            </select>
+                                                            <input class="form-control validate-field"
+                                                            @if(isset($guestAddress->state))
+                                                                value="{{ $guestAddress->state }}"
+                                                            @endif
+                                                            error-message="State is required" id="txtState" type="text" required="">
+                        
                                                             <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
@@ -204,18 +236,23 @@
                                                         <label class="col-md-3">Zip/Postal Code</label>
                                                         <div class="col-md-6">
                                                             <input class="form-control validate-field" id="txtZipCode"
- 
-                                                            error-message="Zip is required" name="postcode" type="text" required="">
+                                                            error-message="Zip is required" name="postcode"
+                                                            @if(isset($guestAddress->zip))
+                                                                value="{{ $guestAddress->zip }}"
+                                                            @endif
+                                                            type="text" required="">
                                                             <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
                                                     <div class="form-group row">
                                                         <label class="col-md-3">Country</label>
                                                         <div class="col-md-6">
-                                                            <select class="form-control validate-field" id="txtCountry" error-message="Country is required">
-                                                                <option value="">-- please choose --</option>
-                                                                <option value="Phillipines">Phillipines</option>
-                                                            </select>
+                                                            <input class="form-control validate-field" error-message="Country is required"   
+                                                            @if(isset($guestAddress->country))
+                                                                value="{{ $guestAddress->country }}"
+                                                            @endif
+                                                            id="txtCountry" type="text" required="">
+                                                       
                                                             <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
@@ -272,7 +309,22 @@
                         <li class="list-group-item">
                         <div class="row" id="manual-form" style="display:none   ;">
                             <div class="col-lg-12 text-center">
+                                <label>Select Payment Service:</label>
+                                <select class="form-control" id="txtPaymentServiceType">
+                                    <option>SELECT</option>
+                                    <option value="PayMaya">PayMaya</option>
+                                    <option value="GCash">GCash</option>
+                                    <option value="BDO">BDO</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-12 text-center">
                                 <label><strong>Bank Information:</strong> <br> (BDO) 006781079084 | Rodel N. Tabunot</label>
+                            </div>
+                            <div class="col-lg-12 text-center">
+                                <label><strong>GCash:</strong> <br> (BDO) 006781079084 | Rodel N. Tabunot</label>
+                            </div>
+                            <div class="col-lg-12 text-center">
+                                <label><strong>PayMaya:</strong> <br> (BDO) 006781079084 | Rodel N. Tabunot</label>
                             </div>
                             <div class="col-lg-12">
                                 <label>Upload proof of payment: </label>
@@ -309,7 +361,7 @@ $(document).ready(function(){
  $(document).on('keyup', '.txtProductQuantity', function(){
 
     $.ajax({
-        url: $('meta[name="app_url"]').attr('content')+'/home/shop/add-item-to-cart-input',
+        url: $('meta[name="app_url"]').attr('content')+'/shop/add-item-to-cart-input',
         method:'POST',
         data:{
             '_token': $('meta[name="csrf-token"]').attr('content'),
@@ -328,7 +380,7 @@ $(document).ready(function(){
  $(document).on('click', '.btn-item-increment', function(){
 
     $.ajax({
-        url: $('meta[name="app_url"]').attr('content')+'/home/shop/add-item-to-cart',
+        url: $('meta[name="app_url"]').attr('content')+'/shop/add-item-to-cart',
         method:'POST',
         data:{
             '_token': $('meta[name="csrf-token"]').attr('content'),
@@ -358,17 +410,18 @@ $(document).ready(function(){
         }
     });  
     var formData = new FormData();
-    formData.append('fname', $('#txtFirstName'));
-    formData.append('lname', $('#txtLastName'));
-    formData.append('mname', $('#txtMiddleName'));
-    formData.append('email', $('#txtEmail'));
-    formData.append('mobile', $('#txtMobile'));
+    formData.append('fname', $('#txtFirstName').val());
+    formData.append('lname', $('#txtLastName').val());
+    formData.append('mname', $('#txtMiddleName').val());
+    formData.append('email', $('#txtEmail').val());
+    formData.append('mobile', $('#txtMobile').val());
     formData.append('address1', $('#txtAddress1').val());
     formData.append('address2', $('#txtAddress2').val());
     formData.append('city', $('#txtCity').val());
     formData.append('state', $('#txtState').val());
     formData.append('zip', $('#txtZipCode').val());
     formData.append('country', $('#txtCountry').val());
+    formData.append('payment_service', $('#txtPaymentServiceType').val());
     formData.append('proof', files);
     $.ajax({
                 url: $('meta[name="app_url"]').attr('content')+'/shop/make-order-manual',
@@ -392,11 +445,11 @@ $(document).ready(function(){
                 success:function(data){
                     
                     if(data.success == true){
-                        window.location.href = $('meta[name="app_url"]').attr('content')+'/home/my-orders';
                         Swal.fire({
                             icon: data.success == true ? 'success' : 'warning',
                             text: data.messages,
                         });
+                        location.reload()
                     }else{
                         Swal.fire({
                             icon: data.success == true ? 'success' : 'warning',
@@ -412,7 +465,7 @@ $(document).ready(function(){
  })
 
 
- $(document).on('click', '#btn-cod', function(){
+$(document).on('click', '#btn-cod', function(){
 
 $.ajax({
     url: $('meta[name="app_url"]').attr('content')+'/shop/make-order-cod',
@@ -429,7 +482,8 @@ $.ajax({
         'city': $('#txtCity').val(),
         'state': $('#txtState').val(),
         'zip': $('#txtZipCode').val(),
-        'country': $('#txtCountry').val()
+        'country': $('#txtCountry').val(),
+        'payment_service': $('#txtPaymentServiceType').val()
     },
     beforeSend:function(){
 
@@ -450,6 +504,7 @@ $.ajax({
                 icon: data.success == true ? 'success' : 'warning',
                 text: data.messages,
             });
+            location.reload()
         }else{
             Swal.fire({
                 icon: data.success == true ? 'success' : 'warning',

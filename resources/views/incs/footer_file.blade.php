@@ -7,3 +7,6 @@
    <script src="https://www.paypal.com/sdk/js?client-id=AXZMC_37OWG1hBJBeNc0D1sLm_rDj8RCbiJGoQZuiYyEcoZMhu9jf-teivLXZyVGXu4VCoLIGXvF-ppc"></script>
    <script src="https://js.pusher.com/7.0/pusher.min.js"></script>
    <script src="https://checkoutshopper-test.adyen.com/checkoutshopper/sdk/3.18.1/adyen.js" integrity="sha384-CJ8FSR4EmldZPoNUHfpHrZ7CSOsP2lxp8xzSNIE92icrx46CmCoSxucO4IRE8h7V" crossorigin="anonymous"></script>
+    <!-- CKEditor 5 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.12/datatables.min.js"></script>

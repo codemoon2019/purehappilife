@@ -4,11 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Mail\ProductOrderMail;
+use App\Models\Guest;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductOrder;
 use App\Models\ProductType;
 use App\Models\User;
+use Mail;
 
 class ProductController extends Controller
 {
@@ -34,22 +37,36 @@ class ProductController extends Controller
         $product->lorikeet = $request->lorikeet_image;
         $product->product_status = $request->product_status;
         $product->stocks = $request->product_stock;
-        $product->save();
+        
 
-        if(count($request->additional_images) != 0){
-            for($i = 0; $i < count($request->additional_images); $i++){
-                $productImages = new ProductImage;
-                $productImages->pid = $product->id;
-                $productImages->product_image_url = $request->additional_images[$i];
-                $productImages->save();
+        if($product->save()){
+
+            if(count($request->additional_images) != 0){
+                for($i = 0; $i < count($request->additional_images); $i++){
+                    $productImages = new ProductImage;
+                    $productImages->pid = $product->id;
+                    $productImages->product_image_url = $request->additional_images[$i];
+                    $productImages->save();
+                }
             }
+
+            return response()->json([
+                'success' => true,
+                'internalMessage' => 'Product created successfully!'
+            ], $this->$successStatus);
+    
+        }else{
+
+            return response()->json([
+                'success' => false,
+                'internalMessage' => 'Product creation failed!'
+            ], $this->$successStatus);
+
         }
 
-        return response()->json([
-            'internalMessage' => 'Product created successfully!'
-        ], $this->$successStatus);
-
+    
     }
+
 
     public function retrieveSingleProductInfo(Request $request){
 
@@ -70,7 +87,7 @@ class ProductController extends Controller
 
 
     public function updateProduct(Request $request){
-   
+
         $product = Product::find($request->id);
         $product->product_name = $request->product_name;
         $product->product_type = $request->product_type;
@@ -145,7 +162,7 @@ class ProductController extends Controller
 
         $orders = ProductOrder::with('productInfo', 'customerInfo')->where('user_type','USER')->offset($start)
                 ->limit($limit)
-                ->orderBy($order,$dir)
+                ->orderBy($order, $dir)
                 ->groupBy('product_orders.order_id')
                 ->get();
 
@@ -197,6 +214,10 @@ class ProductController extends Controller
 
                 if(ProductOrder::whereIn('order_id', [$orders->order_id])->whereIn('status', [4])->get()->count() == ProductOrder::whereIn('order_id', [$orders->order_id])->get()->count()){
                     $orderStatus = 'DELIVERED';
+                }
+
+                if(ProductOrder::whereIn('order_id', [$orders->order_id])->whereIn('status', [5])->get()->count() == ProductOrder::whereIn('order_id', [$orders->order_id])->get()->count()){
+                    $orderStatus = 'CANCELLED';
                 }
 
                 $nestedData['order_status'] = $orderStatus;
@@ -304,6 +325,10 @@ class ProductController extends Controller
                     $orderStatus = 'DELIVERED';
                 }
 
+                if(ProductOrder::whereIn('order_id', [$orders->order_id])->whereIn('status', [5])->get()->count() == ProductOrder::whereIn('order_id', [$orders->order_id])->get()->count()){
+                    $orderStatus = 'CANCELLED';
+                }
+
                 $nestedData['order_status'] = $orderStatus;
 
                 $data[] = $nestedData;
@@ -385,13 +410,22 @@ class ProductController extends Controller
                 $groupOrder = ProductOrder::whereIn('order_id', [$orders->order_id]);
 
                 $nestedData['id'] = $orders->id;
-                $nestedData['order_id'] = '<a href="/order/order-details/'.$orders->order_id.'">#'.$orders->order_id.'</a>';
-                $nestedData['customer_name'] = $orders->customerInfo->first_name.' '.$orders->customerInfo->last_name;
+
+
+                if($orders->user_type == 'USER'){
+                    $nestedData['order_id'] = '<a href="/order/order-details/'.$orders->order_id.'">#'.$orders->order_id.'</a>';
+                    $nestedData['customer_name'] = $orders->customerInfo->first_name.' '.$orders->customerInfo->last_name;
+                }else{
+                    $nestedData['order_id'] = '<a href="/order/guest-order-details/'.$orders->order_id.'">#'.$orders->order_id.'</a>';
+                    $nestedData['customer_name'] = $orders->guestInfo->first_name.' '.$orders->guestInfo->last_name;
+                }
+                
                 $nestedData['total_item_orders'] = $groupOrder->sum('quantity');
                 $nestedData['total_price'] = '₱ '.number_format($groupOrder->sum('total_price'));
                 $nestedData['created_at'] = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $orders->created_at)->format('m-d-Y').' ('.$orders->created_at->diffForHumans().')';
                 $nestedData['payment_status'] = $orders->payment_status;
                 $nestedData['payment_method'] = $orders->payment_method;
+                $nestedData['customer_type'] = $orders->user_type;
 
                 if(ProductOrder::whereIn('order_id', [$orders->order_id])->whereIn('status', [1])->get()->count() == ProductOrder::whereIn('order_id', [$orders->order_id])->get()->count()){
                     $orderStatus = 'PENDING';
@@ -407,6 +441,10 @@ class ProductController extends Controller
 
                 if(ProductOrder::whereIn('order_id', [$orders->order_id])->whereIn('status', [4])->get()->count() == ProductOrder::whereIn('order_id', [$orders->order_id])->get()->count()){
                     $orderStatus = 'DELIVERED';
+                }
+
+                if(ProductOrder::whereIn('order_id', [$orders->order_id])->whereIn('status', [5])->get()->count() == ProductOrder::whereIn('order_id', [$orders->order_id])->get()->count()){
+                    $orderStatus = 'CANCELLED';
                 }
 
                 $nestedData['order_status'] = $orderStatus;
@@ -492,6 +530,7 @@ class ProductController extends Controller
                                                 </div>';
                 $nestedData['product_price'] = '₱ '.number_format($product->product_price);
                 $nestedData['product_stock'] = $product->stocks;
+                
                 if($product->stocks == 0){
                     $status = '<span class="btn btn-sm btn-dark radius-30">No stocks available</span>';   
                 }
@@ -504,6 +543,18 @@ class ProductController extends Controller
                 else{
                     $status = '<span class="btn btn-sm btn-success radius-30">Safe</span>';
                 }
+
+                if($product->product_status == 0){
+
+                    $productStatus = 'Unpublished';
+
+                }else{
+
+                    $productStatus = 'Published';
+
+                }
+
+                $nestedData['status'] = $productStatus;
                 $nestedData['product_status'] =  $status;
                 $nestedData['action'] = '<span class="btn btn-sm btn-warning radius-30 btn-edit" id="'.$product->id.'"><i class="fadeIn animated bx bx-edit"></i></span>
                                         <span class="btn btn-sm btn-danger radius-30 btn-delete" id="'.$product->id.'"><i class="fadeIn animated bx bx-trash-alt"></i></span>';
@@ -582,39 +633,75 @@ class ProductController extends Controller
     */
     public function updateAllOrderStatus(Request $request){
 
-        if($request->status == 4){
+        $getOrders = ProductOrder::where('order_id', $request->order_id);
+      
+        if($getOrders->get()->first()->user_type == 'USER'){
             
-            $getOrders = ProductOrder::where('order_id', $request->order_id);
-
-            foreach($getOrders->get() as $orders){
-
-                $totalPoints = 0;
-
-                $productInfo = Product::where('id', $orders->pid);
-
-                $totalPoints = $productInfo->get()->first()->gift_points * $orders->quantity;
-
-                $customerInfo = User::where('id', $orders->user_id);
-
-                $customerInfo->update([
-                    'tokens' => $customerInfo->get()->first()->tokens + $totalPoints
-                ]);
-
-            }
-
-            $updateOrderStatus = ProductOrder::where('order_id', $request->order_id)->update([
-                'status' => $request->status,
-                'payment_status' => 'PAID'
-            ]);    
-            return array(['status' => 'success']);
+            $customerInfo = User::where('id', $getOrders->get()->first()->user_id)->get()->first();
+      
         }else{
 
-            $updateOrderStatus = ProductOrder::where('order_id', $request->order_id)->update([
-                'status' => $request->status
-            ]);
-
-            return array(['status' => 'success']);
+            $customerInfo = Guest::where('guest_id', $getOrders->get()->first()->user_id)->get()->first();
+      
         }
+
+          
+        if($request->status == 1){
+            $status = 'PENDING';
+        }
+        if($request->status == 2){
+            $status = 'PREPARING';
+        }
+        if($request->status == 3){
+            $status = 'DELIVERING';
+        }
+        if($request->status == 4){
+            $status = 'DELIVERED';
+        }
+        if($request->status == 5){
+            $status = 'CANCELLED';
+        }
+
+    
+
+
+            $email_data = array(
+                'order_number' => $request->order_id,
+                'order_status' => $status,
+                'order_type' => $getOrders->get()->first()->payment_method
+            );
+
+            
+            if($getOrders->get()->first()->user_type == 'USER'){
+
+                if($request->status == 4){
+
+                        foreach($getOrders->get() as $orders){
+        
+                            $totalPoints = 0;
+            
+                            $productInfo = Product::where('id', $orders->pid);
+            
+                            $totalPoints = $productInfo->get()->first()->gift_points * $orders->quantity;
+            
+                            $customerInfo->update([
+                                'tokens' => $customerInfo->tokens + $totalPoints
+                            ]);
+            
+                        }    
+
+                }
+                
+            }
+
+
+        $updateOrderStatus = ProductOrder::where('order_id', $request->order_id)->update([
+            'status' => $request->status
+        ]);
+
+        Mail::to($customerInfo->email)->send(new ProductOrderMail($email_data));
+
+        return array(['status' => 'success']);
 
     }
 
@@ -629,7 +716,69 @@ class ProductController extends Controller
 
        $selectAllTheSelectedProduct = ProductOrder::whereIn('id', $request->orderList)->get();
 
-       return $selectAllTheSelectedProduct;
+       foreach($selectAllTheSelectedProduct as $order){
+
+            $getOrders = ProductOrder::where('order_id', $order->order_id);
+            
+            if($request->status == 1){
+                $status = 'PENDING';
+            }
+            if($request->status == 2){
+                $status = 'PREPARING';
+            }
+            if($request->status == 3){
+                $status = 'DELIVERING';
+            }
+            if($request->status == 4){
+                $status = 'DELIVERED';
+            }
+            if($request->status == 5){
+                $status = 'CANCELLED';
+            }
+
+            if($getOrders->get()->first()->user_type == 'USER'){
+                $customerInfo = User::where('id', $getOrders->get()->first()->user_id)->get()->first();
+            }else{
+                $customerInfo = Guest::where('guest_id', $getOrders->get()->first()->user_id)->get()->first();
+            }
+
+            $email_data = array(
+                'order_number' => $request->order_id,
+                'order_status' => $status,
+                'order_type' => $getOrders->get()->first()->payment_method
+            );
+
+            Mail::to($customerInfo->email)->send(new ProductOrderMail($email_data));   
+            
+            if($getOrders->get()->first()->user_type == 'USER'){
+
+                foreach($getOrders->get() as $orders){
+
+                    $totalPoints = 0;
+    
+                    $productInfo = Product::where('id', $orders->pid);
+    
+                    $totalPoints = $productInfo->get()->first()->gift_points * $orders->quantity;
+    
+                    $customerInfo = User::where('id', $orders->user_id);
+    
+                    $customerInfo->update([
+                        'tokens' => $customerInfo->get()->first()->tokens + $totalPoints
+                    ]);
+    
+                }    
+
+            }
+
+            $updateOrder = ProductOrder::where('order_id', $order->order_id)->update([
+
+                'status' => $request->status
+
+            ]);            
+
+       }
+
+       return 'success';
 
     }
 

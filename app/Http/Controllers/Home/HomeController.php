@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Mail\ProductOrderMail;
 use App\Mail\ConfirmationMail;
 use App\Mail\PointsMail;
 use App\Models\Email;
+use App\Models\Guest;
+use App\Models\GuestAddress;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\UserWishlist;
@@ -16,10 +19,10 @@ use App\Models\Product;
 use App\Models\ProductOrder;
 use App\Models\SignupEmail;
 use App\Models\WebsiteBlog;
+use Illuminate\Http\Response;
 use Auth;
 use Exception;
 use Mail;
-use Illuminate\Http\Response;
 
 class HomeController extends Controller
 {
@@ -33,7 +36,7 @@ class HomeController extends Controller
     */
     public static function index(Request $request){
 
-        $products = Product::limit(10)->get();
+        $products = Product::limit(10)->where('product_status', 1)->get();
         return view('index', compact('products'));
 
     }
@@ -72,10 +75,10 @@ class HomeController extends Controller
         $search = null;
         if($request->get('search') != ''){
             $search = $request->get('search');
-            $data = Product::where('product_name', 'LIKE', '%'.$request->get('search').'%')->paginate(12); 
+            $data = Product::where('product_name', 'LIKE', '%'.$request->get('search').'%')->where('product_status', 1)->paginate(12); 
             return view('userpage.shop', compact('data', 'search'));
         }else{
-            $data = Product::paginate(12);    
+            $data = Product::where('product_status', 1)->paginate(12);    
             return view('userpage.shop', compact('data', 'search'));
         }
 
@@ -90,9 +93,9 @@ class HomeController extends Controller
     public static function shopList(Request $request){
         
         if($request->get('search') != ''){
-            $data = Product::where('product_name', 'LIKE', '%'.$request->get('search').'%')->paginate(12);   
+            $data = Product::where('product_name', 'LIKE', '%'.$request->get('search').'%')->where('product_status', 1)->paginate(12);   
         }else{
-            $data = Product::paginate(12);    
+            $data = Product::where('product_status', 1)->paginate(12);    
         }
         
         return view('incs.shop-list', compact('data'));
@@ -107,7 +110,7 @@ class HomeController extends Controller
     */
     public static function blog(){
 
-        $blogs = WebsiteBlog::get();
+        $blogs = WebsiteBlog::where('status', 1)->get();
 
         return view('userpage.blog', compact('blogs'));
 
@@ -180,7 +183,7 @@ class HomeController extends Controller
 
 
     /**
-    * Orders UI.
+* Orders UI.
     *
     * @return \Illuminate\Contracts\Support\Renderable
     * @return void
@@ -204,14 +207,24 @@ class HomeController extends Controller
     public static function checkout(){
         
         if(auth::check()){
+        
             return view('userpage.checkout');
+        
         }else{
-            return view('userpage.guest-checkout');
+
+            $guestInfo = Guest::where('guest_id', request()->cookie('purehappilife_session'))->get()->first();
+            $guestAddress = GuestAddress::where('guest_id', request()->cookie('purehappilife_session'))->get()->first();
+
+            return view('userpage.guest-checkout', compact('guestInfo', 'guestAddress'));
+        
         }
         
 
     }
 
+    public function reloadCaptcha(){
+        return response()->json(['captcha'=> captcha_img()]);
+    }
 
 
     /**
@@ -222,7 +235,7 @@ class HomeController extends Controller
     */
     public static function registerUser(Request $request){
 
-        $selectIfEmailAlreadyExist = User::where('email', $request->email)->orWhere('email', $request->email)->count();
+        $selectIfEmailAlreadyExist = User::where('email', $request->email)->count();
 
         if($selectIfEmailAlreadyExist != 0){
             return Array(
@@ -253,10 +266,12 @@ class HomeController extends Controller
                     }else{
 
                         $user = new User();
+                        $user->name = $request->firstName.' '.$request->middleName.' '.$request->lastName;
                         $user->first_name = $request->firstName;
                         $user->last_name = $request->lastName;
                         $user->middle_name = $request->middleName;
                         $user->email = $request->email;
+                        $user->type = $request->usertype;
                         $user->password = Hash::make($generatedPassword);
                         $user->referral_link = Str::random(32);
                         
@@ -281,6 +296,7 @@ class HomeController extends Controller
                                 'success' => false,
                                 'internalMessage' => 'Registration failed!',
                                 'userMessage' => 'Something went wrong!',
+                                'password'=> $generatedPassword
                             );    
                         }
 
@@ -288,6 +304,7 @@ class HomeController extends Controller
                             'success' => true,
                             'internalMessage' => 'User registered successfully!',
                             'userMessage' => 'You are registered succesfully!',
+                            'password'=> $generatedPassword
                         );
 
                     }

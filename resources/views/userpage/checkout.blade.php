@@ -27,7 +27,6 @@
                                     <th class="text-center" scope="col">Product Name</th>
                                     <th class="text-center" scope="col">Qty</th>
                                     <th class="text-center" scope="col">Price</th>
-                                    <th class="text-center" scope="col">action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,10 +53,6 @@
                                             <span class="product-price" id="product-price-{{ $cartItem->id }}">
                                             ₱ {{ number_format($cartItem->total_price) }}
                                         </span></td>
-
-                                        <td class="text-center">
-                                            <a href="#"> <span class="trash"><i class="fas fa-trash-alt"></i> </span></a>
-                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -139,7 +134,15 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">State</label>
                                                         <div class="col-md-6">
-                                                            <select class="form-control validate-field" id="txtState" error-message="State is required">
+                                                            <input class="form-control validate-field" error-message="State is required"
+                                                            @if(auth()->user()->userAddress)
+                                                                value="{{ auth()->user()->userAddress->state }}"
+                                                            @endif     
+                                                            @if(!auth()->user()->userAddress)
+                                                                value=""
+                                                            @endif    
+                                                            id="txtState" type="text" required="">
+                                                            <!--<select class="form-control validate-field" id="txtState" error-message="State is required">
                                                                 @if(auth()->user()->userAddress)
                                                                     <option value="{{ auth()->user()->userAddress->state }}">{{ auth()->user()->userAddress->state }}</option>
                                                                 @endif     
@@ -151,7 +154,8 @@
                                                                 <option value="AP">AP</option>
                                                                 <option value="Alabama">Alabama</option>
                                                                 <option value="Alaska">Alaska</option>
-                                                            </select>
+                                                            </select>-->
+
                                                             <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
@@ -172,7 +176,15 @@
                                                     <div class="form-group row">
                                                         <label class="col-md-3">Country</label>
                                                         <div class="col-md-6">
-                                                            <select class="form-control validate-field" id="txtCountry" error-message="Country is required">
+                                                            <input class="form-control validate-field" error-message="Country is required"
+                                                            @if(auth()->user()->userAddress)
+                                                                value="{{ auth()->user()->userAddress->country }}"
+                                                            @endif     
+                                                            @if(!auth()->user()->userAddress)
+                                                                value=""
+                                                            @endif    
+                                                            id="txtCountry" type="text" required="">
+                                                            <!--<select class="form-control validate-field" id="txtCountry" error-message="Country is required">
                                                                 @if(auth()->user()->userAddress)
                                                                     <option value="{{ auth()->user()->userAddress->country }}">{{ auth()->user()->userAddress->country }}</option>
                                                                 @endif     
@@ -180,7 +192,7 @@
                                                                     <option value="">-- please choose --</option>
                                                                 @endif    
                                                                 <option value="Phillipines">Phillipines</option>
-                                                            </select>
+                                                            </select>-->
                                                             <span class="error-message text-center" style="color:red;"></span>
                                                         </div>
                                                     </div>
@@ -203,26 +215,32 @@
                                 data-parent="#accordion">
                                 <div class="card-body pt-0">
                                     <div class="">
-                                        <!-- <div class="custom-radio mb-4">
+                                        <div class="custom-radio mb-4">
                                             <input type="radio" id="test5" name="radio-group" class="radio-group-payment-method" value="paypal">
                                             <label for="test5">Pay by Paypal</label>
                                         </div>
+                                        <!--
                                         <div class="custom-radio mb-4">
                                             <input type="radio" id="test4" name="radio-group" class="radio-group-payment-method" value="gcash">
                                             <label for="test4">Pay by G-Cash</label>
                                         </div>
+                                        -->
+                                          <!--
                                         <div class="custom-radio mb-4">
                                             <input type="radio" id="test3" name="radio-group" class="radio-group-payment-method" value="paymaya">
                                             <label for="test3">Pay by Paymaya</label>
-                                        </div> -->
+                                        </div>
+                                        -->
                                         <div class="custom-radio mb-4">
                                             <input type="radio" id="test3" name="radio-group" class="radio-group-payment-method" value="manual">
-                                            <label for="test3">Manual Payment</label>
+                                            <label for="test3">Direct Transaction</label>
                                         </div>
+                                        <!--
                                         <div class="custom-radio mb-4">
                                             <input type="radio" id="test2" name="radio-group" class="radio-group-payment-method" value="happipoints">
                                             <label for="test2">Pay by Happi Points</label>
                                         </div>
+                                        -->
                                         <div class="custom-radio mb-4">
                                             <input type="radio" id="test1" name="radio-group" class="radio-group-payment-method" value="cod">
                                             <label for="test1">Pay by Cash on Delivery</label>
@@ -252,7 +270,16 @@
                         </li>
 
                         <li class="list-group-item">
-                        <div class="row" id="manual-form" style="display:none   ;">
+                        <div class="row" id="manual-form">
+                            <div class="col-lg-12 text-center">
+                                <label>Select Payment Service:</label>
+                                <select class="form-control" id="txtPaymentServiceType">
+                                    <option>SELECT</option>
+                                    <option>PayMaya</option>
+                                    <option>GCash</option>
+                                    <option>BDO</option>
+                                </select>
+                            </div>
                             <div class="col-lg-12 text-center">
                                 <label><strong>Bank Information:</strong> <br> (BDO) 006781079084 | Rodel N. Tabunot</label>
                             </div>
@@ -268,8 +295,10 @@
                         <div id="validation-message" class="text-center">Fill out all the field required before to checkout.</div>  
                         <div id="paypal-button-container" style="display:none;"></div> 
                         <button class="btn btn-dark3 form-control" id="btn-cod" style="display:none;">Proceed with COD</button>
-                        <div id="gcash" class="payment" style="display:none;"></div>
-                        <div id="paymaya" class="payment" style="display:none;"></div>
+                        <div id="gcash" class="payment">
+                            <div id="gcash-container"></div>
+                        </div>
+                        <div id="paymaya" class="payment"></div>
                         <button class="btn btn-dark3 form-control" id="btn-happipoints" style="display:none;">Pay with Happi Points</button>
                         </li>
                     </ul>

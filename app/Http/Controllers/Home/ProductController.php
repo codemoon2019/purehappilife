@@ -11,13 +11,18 @@ use App\Models\GuestCart;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductOrder;
+use App\Models\ProductOrderAddress;
+use App\Models\ProductOrderCustomerInfo;
 use App\Models\ProductOrderPaymentProof;
 use App\Models\User;
 use App\Models\UserAddress;
 use App\Models\UserCart;
 use App\Models\UserComment;
 use App\Models\UserWishlist;
+use App\Mail\ProductOrderMail;
+use App\Models\WebsiteBlog;
 use Auth;
+use Mail;
 
 class ProductController extends Controller
 {
@@ -125,14 +130,14 @@ class ProductController extends Controller
                         $cart = new UserCart;
                         $cart->user_id = auth()->user()->id;
                         $cart->pid = $request->dataID;
-                        $cart->total_price = $productInfo->product_retail_price;
+                        $cart->total_price = $productInfo->product_price;
                         $cart->quantity = 1;
                         $cart->save();
                     }else{
                         $cart = new GuestCart;
                         $cart->guest_id = request()->cookie('purehappilife_session');
                         $cart->pid = $request->dataID;
-                        $cart->total_price = $productInfo->product_retail_price;
+                        $cart->total_price = $productInfo->product_price;
                         $cart->quantity = 1;
                         $cart->save();
                     }
@@ -186,6 +191,78 @@ class ProductController extends Controller
 
         }
 
+    }
+
+
+    /**
+    * Create product.
+    *
+    * @param  Request  $request
+    * @return Response
+    */
+    public function artistCreateProduct(Request $request){
+        
+        $product = new Product;
+        $product->product_name = $request->txtProductName;
+        $product->product_type = 1;
+        $product->product_description = $request->txtProductDescription;
+        $product->product_price = $request->txtProductOriginalPrice;
+        $product->product_retail_price = $request->txtProductRetailPrice;
+        $product->gift_points = $request->txtGiftPoints;  
+        $product->product_status = 0;
+        $product->user_type = auth()->user()->id;
+        $product->stocks = $request->txtProductStock;
+        
+        if($request->hasFile('txtProductPrimaryImage')){
+            $primaryFilenameWithExt = $request->file('txtProductPrimaryImage')->getClientOriginalName();
+            $primaryFileName = pathinfo($primaryFilenameWithExt, PATHINFO_FILENAME);
+            $primaryExtension = $request->file('txtProductPrimaryImage')->getClientOriginalExtension();
+            $primaryFileNameToStore = $primaryFileName.'_'.time().'.'.$primaryExtension;
+            $path = $request->file('txtProductPrimaryImage')->storeAs('public/product_images', $primaryFileNameToStore);
+            $main_image = '/storage/product_images/'.$primaryFileNameToStore;
+            $product->product_image_url = $main_image;
+        }
+
+
+        if($request->hasFile('txtLorikeet')){
+            $lorikeetFilenameWithExt = $request->file('txtLorikeet')->getClientOriginalName();
+            $lorikeetFileName = pathinfo($lorikeetFilenameWithExt, PATHINFO_FILENAME);
+            $lorikeetExtension = $request->file('txtLorikeet')->getClientOriginalExtension();
+            $lorikeetFileNameToStore = $lorikeetFileName.'_'.time().'.'.$lorikeetExtension;
+            $path = $request->file('txtLorikeet')->storeAs('public/lorikeet_images', $lorikeetFileNameToStore);
+            $lorikeet_image = '/storage/lorikeet_images/'.$lorikeetFileNameToStore;
+            $product->lorikeet = $lorikeet_image;
+        }
+
+        if($product->save()){
+
+            if($request->hasFile('txtProductAdditionalImage')){
+                foreach($request->file('txtProductAdditionalImage') as $value){
+                    
+                    $secondaryFilenameWithExt = $value->getClientOriginalName();
+                    $secondaryFileName = pathinfo($secondaryFilenameWithExt, PATHINFO_FILENAME);
+                    $secondaryExtension = $value->getClientOriginalExtension();
+                    $secondaryFileNameToStore = $secondaryFileName.'_'.time().'.'.$secondaryExtension;
+                    $secondarypath = $value->storeAs('public/product_images', $secondaryFileNameToStore);
+                    $secondary_image = '/storage/product_images/'.$secondaryFileNameToStore;
+    
+                    $productImages = new ProductImage;
+                    $productImages->pid = $product->id;
+                    $productImages->product_image_url = $secondary_image;
+                    $productImages->save();
+    
+                };
+            }
+
+            return redirect('/home/shop');
+    
+        }else{
+
+            return redirect('/home/shop');
+
+        }
+
+    
     }
 
 
@@ -378,6 +455,15 @@ class ProductController extends Controller
                     'country' => $request->country,
                     'status' => 1,
                 ]);
+
+                $email_data = array(
+                    'order_number' => $generatedOrderNumber,
+                    'order_status' => 'PENDING',
+                    'order_type' => 'HAPPI POINTS'
+                );
+
+                //Mail::to($request->email)->send(new ProductOrderMail($email_data));
+
             }
     
             foreach($userCart->get() as $checkoutOrder){
@@ -420,13 +506,52 @@ class ProductController extends Controller
             if(auth::check()){
                 $userCart = UserCart::where('user_id', auth()->user()->id);
                 $findUserAddress = UserAddress::whereIn('user_id', [auth()->user()->id]);
+                $findUser = User::whereIn('id', [auth()->user()->id]);
             }else{
                 $userCart = GuestCart::where('guest_id', request()->cookie('purehappilife_session'));
                 $findUserAddress = GuestAddress::whereIn('guest_id', [request()->cookie('purehappilife_session')]);
+                $findUser = Guest::whereIn('guest_id', [request()->cookie('purehappilife_session')]);
             }
+            
             
             $generatedOrderNumber = mt_rand(1000000, 9999999);
 
+            if(!auth::check()){
+            
+                if($findUser->count() != 0){
+
+                    $insertGuestInfo = $findUser->update([
+                        'first_name' => $request->fname,
+                        'last_name' => $request->lname,
+                        'middle_name' => $request->mname,
+                        'email' => $request->email,
+                        'mobile' => $request->mobile,
+                    ]);
+                  
+                }else{
+                    
+                    $insertGuestInfo = Guest::insert([
+                        'guest_id' => request()->cookie('purehappilife_session'),
+                        'first_name' => $request->fname,
+                        'last_name' => $request->lname,
+                        'middle_name' => $request->mname,
+                        'email' => $request->email,
+                        'mobile' => $request->mobile,
+                    ]);
+
+                }
+    
+                $email_data = array(
+                    'order_number' => $generatedOrderNumber,
+                    'order_status' => 'PENDING',
+                    'order_type' => 'COD'
+                );
+
+                //Mail::to($request->email)->send(new ProductOrderMail($email_data));
+
+            }
+
+            //Address information
             if($findUserAddress->count() != 0){
 
                 $findUserAddress->update([
@@ -442,7 +567,6 @@ class ProductController extends Controller
             }else{
             
                 if(auth::check()){
-                    
                     $insertUserAddress = UserAddress::insert([
                         'user_id' => auth()->user()->id,
                         'address' => $request->address1,
@@ -453,24 +577,7 @@ class ProductController extends Controller
                         'country' => $request->country,
                         'status' => 1,
                     ]);
-
                 }else{
-                    
-                    $findIfGuestExist = Guest::where('guest_id', request()->cookie('purehappilife_session'))->get()->count();
-                    
-                    if($findIfGuestExist == 0){
-                        
-                        $insertGuestInfo = Guest::insert([
-                            'guest_id' => request()->cookie('purehappilife_session'),
-                            'first_name' => $request->fname,
-                            'last_name' => $request->fname,
-                            'middle_name' => $request->fname,
-                            'email' => $request->email,
-                            'mobile' => $request->mobile,
-                        ]);
-
-                    }
-
                     $insertUserAddress = GuestAddress::insert([
                         'guest_id' => request()->cookie('purehappilife_session'),
                         'address' => $request->address1,
@@ -481,9 +588,7 @@ class ProductController extends Controller
                         'country' => $request->country,
                         'status' => 1,
                     ]);
-
                 }
-            
 
             }
     
@@ -532,10 +637,96 @@ class ProductController extends Controller
     */
     public function makeOrderManual(Request $request){
 
-        $userCart = UserCart::where('user_id', auth()->user()->id);
+        if(auth::check()){
+            $userCart = UserCart::where('user_id', auth()->user()->id);
+            $findUserAddress = UserAddress::whereIn('user_id', [auth()->user()->id]);
+            $findUser = User::whereIn('id', [auth()->user()->id]);
+        }else{
+            $userCart = GuestCart::where('guest_id', request()->cookie('purehappilife_session'));
+            $findUserAddress = GuestAddress::whereIn('guest_id', [request()->cookie('purehappilife_session')]);
+            $findUser = Guest::whereIn('guest_id', [request()->cookie('purehappilife_session')]);
+        }
+        
         $generatedOrderNumber = mt_rand(1000000, 9999999);
 
+        if(!auth::check()){
+        
+            if($findUser->count() != 0){
+
+                $insertGuestInfo = $findUser->update([
+                    'first_name' => $request->fname,
+                    'last_name' => $request->lname,
+                    'middle_name' => $request->mname,
+                    'email' => $request->email,
+                    'mobile' => $request->mobile,
+                ]);
+              
+            }else{
+                
+                $insertGuestInfo = Guest::insert([
+                    'guest_id' => request()->cookie('purehappilife_session'),
+                    'first_name' => $request->fname,
+                    'last_name' => $request->lname,
+                    'middle_name' => $request->mname,
+                    'email' => $request->email,
+                    'mobile' => $request->mobile,
+                ]);
+
+            }
+
+            $email_data = array(
+                'order_number' => $generatedOrderNumber,
+                'order_status' => 'PENDING',
+                'order_type' => 'MANUAL'
+            );
+
+            //Mail::to($request->email)->send(new ProductOrderMail($email_data));
+
+        }
+
+        //Address information
+        if($findUserAddress->count() != 0){
+
+            $findUserAddress->update([
+                'address' => $request->address1,
+                'address_complement' => $request->address2,
+                'city' => $request->city,
+                'state' => $request->address1,
+                'zip' => $request->zip,
+                'country' => $request->country,
+                'status' => 1,
+            ]);
+            
+        }else{
+        
+            if(auth::check()){
+                $insertUserAddress = UserAddress::insert([
+                    'user_id' => auth()->user()->id,
+                    'address' => $request->address1,
+                    'address_complement' => $request->address2,
+                    'city' => $request->city,
+                    'state' => $request->address1,
+                    'zip' => $request->zip,
+                    'country' => $request->country,
+                    'status' => 1,
+                ]);
+            }else{
+                $insertUserAddress = GuestAddress::insert([
+                    'guest_id' => request()->cookie('purehappilife_session'),
+                    'address' => $request->address1,
+                    'address_complement' => $request->address2,
+                    'city' => $request->city,
+                    'state' => $request->address1,
+                    'zip' => $request->zip,
+                    'country' => $request->country,
+                    'status' => 1,
+                ]);
+            }
+
+        }
+
         if($request->hasFile('proof')){
+
             $lorikeetFilenameWithExt = $request->file('proof')->getClientOriginalName();
             $lorikeetFileName = pathinfo($lorikeetFilenameWithExt, PATHINFO_FILENAME);
             $lorikeetExtension = $request->file('proof')->getClientOriginalExtension();
@@ -553,40 +744,24 @@ class ProductController extends Controller
                     'proof_order_file' => $lorikeet_image,
                     'status' => 'PENDING'
             ]);
-        }
 
-        $findUserAddress = UserAddress::whereIn('user_id', [auth()->user()->id]);
-
-        if($findUserAddress->count() != 0){
-            $findUserAddress->update([
-                'address' => $request->address1,
-                'address_complement' => $request->address2,
-                'city' => $request->city,
-                'state' => $request->address1,
-                'zip' => $request->zip,
-                'country' => $request->country,
-                'status' => 1,
-            ]);
-        }else{
-            $insertUserAddress = UserAddress::insert([
-                'user_id' => auth()->user()->id,
-                'address' => $request->address1,
-                'address_complement' => $request->address2,
-                'city' => $request->city,
-                'state' => $request->address1,
-                'zip' => $request->zip,
-                'country' => $request->country,
-                'status' => 1,
-            ]);
         }
 
         foreach($userCart->get() as $checkoutOrder){
             
-            $cartInfo = UserCart::find($checkoutOrder->id);
-            $cartInfo->delete();
+            if(auth::check()){
+                $cartInfo = UserCart::find($checkoutOrder->id);
+                $userID = auth()->user()->id;
+            }else{
+                $cartInfo = GuestCart::find($checkoutOrder->id);
+                $userID = request()->cookie('purehappilife_session');
+            }
 
+            $cartInfo->delete();
+    
             $product = new ProductOrder;
-            $product->user_id = auth()->user()->id;
+            $product->user_id = $userID;
+            $product->user_type = auth::check() ? 'USER' : 'GUEST';
             $product->order_id = $generatedOrderNumber;
             $product->pid = $checkoutOrder->pid;
             $product->quantity = $checkoutOrder->quantity;
@@ -721,12 +896,31 @@ class ProductController extends Controller
     */
     public function addItemToCart(Request $request){
 
-        $cartinfo = UserCart::where('id', $request->id)->get()->first();
+        if(auth::check()){
+
+            $cartinfo = UserCart::where('id', $request->id)->get()->first();
+
+        }else{
+
+            $cartinfo = GuestCart::where('id', $request->id)->get()->first();
+        
+        }
+
         $productInfo = Product::where('id', $cartinfo->pid)->get()->first();
 
-        $updateCartItemQuantity = UserCart::where('id', $request->id)->update([
-            'quantity' => $cartinfo->quantity + 1
-        ]);
+        if(auth::check()){
+            
+            $updateCartItemQuantity = UserCart::where('id', $request->id)->update([
+                'quantity' => $cartinfo->quantity + 1
+            ]);
+
+        }else{
+
+            $updateCartItemQuantity = GuestCart::where('id', $request->id)->update([
+                'quantity' => $cartinfo->quantity + 1
+            ]);
+
+        }
 
     }
 
@@ -738,13 +932,34 @@ class ProductController extends Controller
     */
     public function minusItemToCart(Request $request){
 
-        $cartinfo = UserCart::where('id', $request->id)->get()->first();
+        if(auth::check()){
+
+            $cartinfo = UserCart::where('id', $request->id)->get()->first();
+
+        }else{
+
+            $cartinfo = GuestCart::where('id', $request->id)->get()->first();
+        
+        }
+
         $productInfo = Product::where('id', $cartinfo->pid)->get()->first();
 
         if($cartinfo->quantity != 1){
-            $updateCartItemQuantity = UserCart::where('id', $request->id)->update([
-                'quantity' => $cartinfo->quantity - 1
-            ]);
+
+            if(auth::check()){
+            
+                $updateCartItemQuantity = UserCart::where('id', $request->id)->update([
+                    'quantity' => $cartinfo->quantity - 1
+                ]);
+    
+            }else{
+    
+                $updateCartItemQuantity = GuestCart::where('id', $request->id)->update([
+                    'quantity' => $cartinfo->quantity - 1
+                ]);
+    
+            }
+
         }
 
     }
@@ -974,6 +1189,43 @@ class ProductController extends Controller
         $response = $service->paymentsDetails($payload);
 
         return $response;
+    }
+
+        /**
+    * Create website blogs.
+    *
+    * @param  Request  $request
+    * @return Response
+    */
+    public function createWebsiteBlog(Request $request){
+
+        $main_image = 'no-path';
+
+        $blog = new WebsiteBlog;
+        $blog->subject = $request->txtSubject;
+        $blog->description = $request->txtDescription;
+        $blog->status = 0;
+        
+        if($request->hasFile('txtFile')){
+            $primaryFilenameWithExt = $request->file('txtFile')->getClientOriginalName();
+            $primaryFileName = pathinfo($primaryFilenameWithExt, PATHINFO_FILENAME);
+            $primaryExtension = $request->file('txtFile')->getClientOriginalExtension();
+            $primaryFileNameToStore = $primaryFileName.'_'.time().'.'.$primaryExtension;
+            $path = $request->file('txtFile')->storeAs('public/website_blogs', $primaryFileNameToStore);
+            $main_image = '/storage/website_blogs/'.$primaryFileNameToStore;
+        }
+
+        $blog->image_url = $main_image;
+        $blog->save();
+
+        if($blog->save()){
+            return redirect('/home/blog');
+
+        }else{
+            return redirect('/home/blog');
+
+        }
+
     }
 
     

@@ -22,8 +22,7 @@
             <div class="row">
                 <div class="col-md-6 mx-auto col-lg-5 mb-5 mb-lg-0">
                     <div class="product-sync-init mb-20">
-
-                     
+                    @if($productInfo->user_type == null) 
                         <div class="single-product">
                             <div class="product-thumb">
                                 @if($productInfo->product_image_url == 'no-path')
@@ -45,10 +44,35 @@
                                 </div>
                             @endforeach
                         @endif
+                    @else
+                        <div class="single-product">
+                            <div class="product-thumb">
+                                @if($productInfo->product_image_url == 'no-path')
+                                    <img src="/assets/img/no-image.png" style="width:450px; height:450px;" alt="product-thumb">
+                                @endif
+                                @if($productInfo->product_image_url != 'no-path')
+                                    <img src="{{ $productInfo->product_image_url }}" style="width:400px; height:400px;" alt="product-thumb">
+                                @endif
+                            </div>
+                        </div>
+                    
+                        @if($productInfo->productImages->count() != 0)
+                            @foreach($productInfo->productImages as $image)
+                                <!-- single-product end -->
+                                <div class="single-product">
+                                    <div class="product-thumb">
+                                        <img src="{{ $image->product_image_url }}" style="width:400px; height:400px;"  alt="product-thumb">
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    @endif
+
+
                     </div>
 
                     <div class="product-sync-nav" style="margin-top:10px;">
-                        
+                    @if($productInfo->user_type == null) 
                         <div class="single-product">
                             <div class="product-thumb">
                                 <a href="javascript:void(0)">
@@ -71,7 +95,30 @@
                                 </div>
                             @endforeach
                         @endif
-        
+                    @else
+                        <div class="single-product">
+                            <div class="product-thumb">
+                                <a href="javascript:void(0)">
+                                    @if($productInfo->product_image_url == 'no-path')
+                                        <img src="/assets/img/no-image.png" alt="product-thumb">
+                                    @endif
+                                    @if($productInfo->product_image_url != 'no-path')
+                                        <img src="{{ $productInfo->product_image_url }}" style="width:90px; height:90px;" alt="product-thumb">
+                                    @endif
+                                </a>
+                            </div>
+                        </div>
+
+                        @if($productInfo->productImages->count() != 0)
+                            @foreach($productInfo->productImages as $image)
+                                <div class="single-product">
+                                    <div class="product-thumb">
+                                        <a href="javascript:void(0)"> <img src="{{ $image->product_image_url }}" alt="product-thumb"></a>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @endif
+                    @endif
 
                     </div>
                 </div>
@@ -132,7 +179,7 @@
                                 @if($productInfo->product_retail_price != '')
                                     <span class="regular-price"> <del>₱ {!! number_format($productInfo->product_price) !!}</del> ₱ {!! number_format($productInfo->product_retail_price) !!}</span>
                                 @else
-                                    <span class="regular-price"> ₱ {!! number_format($productInfo->product_retail_price) !!}</span>
+                                    <span class="regular-price"> ₱ {!! number_format($productInfo->product_price) !!}</span>
                                 @endif
                                 </div>
                             </div>
@@ -149,7 +196,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button class="btn btn-primary rounded mt-5 mt-sm-0 {{ auth::check() ? 'btn-add-to-cart' : 'btn-add-to-cart-disabled' }}" id="{{ $id }}">
+                                    <button class="btn btn-primary rounded mt-5 mt-sm-0 {{ auth::check() ? 'btn-add-to-cart' : 'btn-add-to-cart-single' }}" id="{{ $id }}">
                                     <span class="mr-2"><i class="ion-android-add"></i></span>
                                     Add to cart
                                   </button>
@@ -189,9 +236,16 @@
                                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
                                     <div class="product-description">
                                         {!! html_entity_decode($productInfo->product_description) !!}
-                                        @if($productInfo->lorikeet != 'no-path')
-                                            <img src="{{ config('app.api_url') }}{{ $productInfo->lorikeet }}" style="width:100%; margin-top:20px;" alt="product-thumb">
+                                        @if($productInfo->user_type == null) 
+                                            @if($productInfo->lorikeet != 'no-path')
+                                                <img src="{{ config('app.api_url') }}{{ $productInfo->lorikeet }}" style="width:100%; margin-top:20px;" alt="product-thumb">
+                                            @endif
+                                        @else
+                                            @if($productInfo->lorikeet != 'no-path')
+                                                <img src="{{ $productInfo->lorikeet }}" style="width:100%; margin-top:20px;" alt="product-thumb">
+                                            @endif
                                         @endif
+                                      
                                     </div>
                                 </div>
                                 <!-- third tab-pane -->

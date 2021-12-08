@@ -1,7 +1,7 @@
 @component('mail::message')
-# Welcome to Pure Happilife PH
+# Welcome to Cartsy Gallery PH
 
-Please use this password to login your account in Pure Happilife PH.
+Please use this password to login your account in Cartsy Gallery PH.
 
 <h1 style="text-align:center;">{{ $email_data['password'] }}</h1>
 

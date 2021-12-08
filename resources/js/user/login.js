@@ -1,5 +1,15 @@
 var submit = false;
 
+$('#reload').click(function () {
+    $.ajax({
+        type: 'GET',
+        url: '/reload-captcha',
+        success: function (data) {
+            $(".captcha span").html(data.captcha);
+        }
+    });
+});
+
 $(document).on('click','.btn-login', function(e){
     
     e.preventDefault();
@@ -15,7 +25,7 @@ $(document).on('click','.btn-login', function(e){
             },
             beforeSend:function(){
                 Swal.fire({
-                    text: 'Please wait while registering your account in Pure Happilife ...',
+                    text: 'Please wait while registering your account in Cartsy Gallery ...',
                     allowOutsideClick: false,
                     showConfirmButton: false,
                     willOpen: () => {

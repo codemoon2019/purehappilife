@@ -1,5 +1,5 @@
-/*const clientKey = 'pub.v2.8016052800121276.aHR0cDovLzEyNy4wLjAuMTo5MDkw.mAizqOx6DiMIPhcQyADxFCzWcBHlhNyCzJQo0EObKO0';
-const type = 'gcash'; */
+const clientKey = 'pub.v2.8016052800121276.aHR0cDovLzEyNy4wLjAuMTo5MDkw.mAizqOx6DiMIPhcQyADxFCzWcBHlhNyCzJQo0EObKO0';
+const type = 'gcash';
 var submit = false;
 
 $('.radio-group-payment-method').click(function () {
@@ -142,7 +142,7 @@ async function initCheckoutPaymaya() {
       console.error(error);
       alert("Error occurred. Look at console for details");
     }
-  }
+  }*/
 
 function filterUnimplemented(pm) {
   pm.paymentMethods = pm.paymentMethods.filter((it) =>
@@ -209,7 +209,7 @@ function handleServerResponse(res, component) {
         break;
     }
   }
-}*/ 
+}
 
 $(document).on('keyup change', '.validate-field', function(){
   if(submit != false){
@@ -244,7 +244,7 @@ function topFunction() {
 }
 
 
-/*
+
 initCheckoutPaymaya();
 initCheckoutGcash();
-*/  
+  

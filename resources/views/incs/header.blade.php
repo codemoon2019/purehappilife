@@ -6,16 +6,25 @@
    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
    <meta name="csrf-token" content="{{ csrf_token() }}">
    <meta name="app_url" content="{{ config('app.url') }}">
-   <meta name="shop_url" content="{{ auth::check() == true ? config('app.url').'/home/shop/shop-list' : config('app.url').'/shop-list' }}">
-   @if(auth::check())
+   <meta name="shop_url" content="{{ Auth::check() == true ? config('app.url').'/home/shop/shop-list' : config('app.url').'/shop-list' }}">
+   @if(Auth::check())
    <meta name="site_visitor_number" content="{{ auth()->user()->id }}">
    @endif
-   <title>{{ 'Pure Happilife' }}</title>
+   <title>{{ 'Cartsy Gallery' }}</title>
    <meta name="description" content="" />
-   <link rel="shortcut icon" type="image/x-icon" href="{{ config('app.url') }}/assets/img/logo/icon.png" />
+   <link rel="shortcut icon" type="image/x-icon" href="{{ config('app.url') }}/assets/img/logo/logo.png" />
    @include('incs.header_file')
+
+
 </head>
 <body>
+
+      <div id="fb-root"></div>
+      <!-- Your Chat Plugin code -->
+      <div class="fb-customerchat"
+        attribution="setup_tool"
+        page_id="104247884474180">
+      </div>
 
    <div class="offcanvas-overlay"></div>
    <div id="offcanvas-mobile-menu" class="offcanvas offcanvas-mobile-menu">
@@ -32,7 +41,7 @@
          </nav>
       </div>
       <nav class="offcanvas-menu">
-      @if(auth::check())
+      @if(Auth::check())
         <ul>
             <li><a href="/home"><span class="menu-text">Home</span></a></li>
             <li><a href="/home/shop"><span class="menu-text">Shop</span></a></li>
@@ -41,7 +50,7 @@
             <li><a href="/home/about"><span class="menu-text">About Us</span></a></li>
         </ul>
       @endif
-      @if(!auth::check())
+      @if(!Auth::check())
         <ul>
             <li><a href="/"><span class="menu-text">Home</span></a></li>
             <li><a href="/shop"><span class="menu-text">Shop</span></a></li>
@@ -70,27 +79,27 @@
             <div class="row align-items-center">
                <div class="col-lg-4">
                   <div class="static-info">
-                     <p class="text-dark">Welcome you to Pure Happilife!</p>
+                     <p class="text-dark">Welcome you to Cartsy Gallery!</p>
                   </div>
                </div>
                <div class="col-lg-8">
                   <nav class="header-top-nav">
                      <ul class="d-flex justify-content-end align-items-center">
-                        @if(auth::check())
+                        @if(Auth::check())
                         <li>
-                           <a href="#">
-                           <i class="ion-ios-circle-filled"></i> Happi Points: <strong>{{ number_format(auth()->user()->tokens) }}</strong></span></a>
+                           <a href="/chatify" target="_blank">
+                           <i class="fa fa-comments"></i> Messenger</a>
                         <span class="separator">|</span>
                         </li>
                         @endif
-                        @if(auth::check())
+                        @if(Auth::check() && auth()->user()->type != 'Artist')
                         <li>
                            <a href="/home/wishlist">
                               <i class="ion-android-favorite-outline"></i> Wishlist <span id="total-wishlist">({{ auth()->user()->userWishlist->count() }})</span></a>
                            <span class="separator">|</span>
                         </li>
                         @endif
-                        @if(auth::check())
+                        @if(Auth::check() && auth()->user()->type != 'Artist')
                         <li>
                            <a href="/home/my-orders">
                               <i class="ion-android-cart"></i> My Orders</a>
@@ -100,19 +109,19 @@
                         <li class="english">
                            <a href="#" id="dropdown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               <i class="ion-ios-contact-outline"></i><strong> Welcome, </strong> 
-                              @if(!auth::check())
+                              @if(!Auth::check())
                                  Guest  
                               @endif
-                              @if(auth::check())
+                              @if(Auth::check())
                                  {{ auth()->user()->first_name }}
                               @endif
                               <i class="ion ion-ios-arrow-down"></i></a>
                               <ul class="topnav-submenu dropdown-menu" aria-labelledby="dropdown1">
-                              @if(!auth::check())
+                              @if(!Auth::check())
                                 <li><a href="/login">Login</a></li>
                                 <li><a href="/register">Sign up</a></li>
                               @endif
-                              @if(auth::check())
+                              @if(Auth::check())
                                  <li><a href="/home/my-profile">My Profile</a></li>
                                  <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Log out</a></li>
                               @endif
@@ -135,7 +144,7 @@
                <div class="col-4">
                   <nav class="header-top-nav d-flex align-items-center">
                      <ul>
-                        @if(auth::check())
+                        @if(Auth::check())
                         <li class="mr-4"> <a href="#" id="dropdown4" data-toggle="dropdown" aria-haspopup="true"
                               aria-expanded="false"><i class="ion-ios-contact"></i></a>
                            <ul class="topnav-submenu dropdown-menu" aria-labelledby="dropdown4">
@@ -146,7 +155,7 @@
                         @endif
                      </ul>
                      <div class="cart-block position-relative">
-                        @if(!auth::check())
+                        @if(!Auth::check())
                         <a href="#">
                            <span class="position-relative">
                               <i class="ion-bag"></i>
@@ -154,7 +163,7 @@
                            </span>
                         </a>
                         @endif
-                        @if(!auth::check())
+                        @if(!Auth::check())
                         <div class="small-cart">
                            <div class="small-cart-item">
 
@@ -164,7 +173,7 @@
                            </div>
                         </div>
                         @endif
-                        @if(auth::check())
+                        @if(Auth::check())
                         <a href="#">
                            <span class="position-relative">
                               <i class="ion-bag"></i>
@@ -172,7 +181,7 @@
                            </span>
                         </a>
                         @endif
-                        @if(auth::check())
+                        @if(Auth::check())
                         <div class="small-cart">
                            <div class="small-cart-item">
 
@@ -187,7 +196,7 @@
                </div>
                <div class="col-4 text-center">
                   <div class="logo mt-3 mb-2rem">
-                     <a href="/"><img src="{{ config('app.url') }}/assets/img/logo/pure.png" alt="logo"></a>
+                     <a href="/"><img src="{{ config('app.url') }}/assets/img/logo/logo.png" alt="logo"></a>
                   </div>
                </div>
                <!-- mobile-menu-toggle start -->
@@ -209,14 +218,14 @@
             <div class="row align-items-center">
                <div class="col-lg-3 d-none d-lg-block">
                   <div class="logo">
-                     <a href="/"><img src="{{ config('app.url') }}/assets/img/logo/pure.png" alt="logo"></a>
+                     <a href="/"><img src="{{ config('app.url') }}/assets/img/logo/logo.png" alt="logo"></a>
                   </div>
                </div>
                <div class="col-lg-9">
                   <div
                      class="search-form-wrapper mb-2rem mb-lg-0 pl-lg-5 d-flex align-items-center justify-content-between">
                      <div class="search-form search-form-res">
-                        <form class="form-inline position-relative" action="{{ auth::check() == true ? config('app.url').'/home/shop/shop' : config('app.url').'/shop' }}" method="GET">
+                        <form class="form-inline position-relative" action="{{ Auth::check() == true ? config('app.url').'/home/shop/shop' : config('app.url').'/shop' }}" method="GET">
                            <input class="form-control border-blue" type="search" name="search"
                               placeholder="Search a product ..."
                               
@@ -235,7 +244,7 @@
                         <div class="media-body">
                            <div class="phone">
                               <strong class="text-dark">Call us:</strong>
-                              <a href="#" class="text-primary">cs@purehappilife.ph</a>
+                              <a href="#" class="text-primary">cs@cartsygallery.ph</a>
                            </div>
                            <div class="email">
                               <a href="#" class="text-dark">(+639) 23 447 6552</a>
@@ -250,57 +259,52 @@
       </div>
       <!-- header-middle end -->
       <!-- header bottom start -->
-      <nav id="sticky" class="header-bottom nav-style1 bg-primary d-none d-lg-block">
+      <nav class="header-bottom nav-style1 bg-primary d-none d-lg-block">
          <div class="container">
             <div class="row align-items-center">
                <div class="col-lg-12 d-flex flex-wrap align-items-center">
                   <ul class="main-menu d-flex">
-                     @if(auth::check())
+                     @if(Auth::check())
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['shop', 'blog', 'contactus', 'about']) == false) active @endif ml-0">
                            <a href="/home">Home</a>
                      </li>
                      @endif
-                     @if(!auth::check())
+                     @if(!Auth::check())
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['shop', 'blog', 'contactus', 'about']) == false) active @endif ml-0">
                            <a href="/">Home</a>
                      </li>
                      @endif
-                     @if(auth::check())
+                     @if(Auth::check())
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['shop'])) active @endif">
                         <a href="/home/shop">Shop</a>
                      </li>
                      @endif
-                     @if(!auth::check())
+                     @if(!Auth::check())
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['shop'])) active @endif">
                         <a href="/shop">Shop</a>
                      </li>
                      @endif
-                     @if(auth::check())
+                     @if(Auth::check() && auth()->user()->type == 'Artist')
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['blog'])) active @endif">
-                        <a href="/home/blog">Blog </a>
+                        <a href="/home/blog">Gallery </a>
                      </li>
                      @endif
-                     @if(!auth::check())
-                     <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['blog'])) active @endif">
-                        <a href="/blog">Blog </a>
-                     </li>
-                     @endif
-                     @if(auth::check())
+                     @if(Auth::check())
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['contactus'])) active @endif">
                         <a href="/home/contactus">contact Us</a>
                      </li>
                      @endif
-                     @if(!auth::check())
+                     @if(!Auth::check())
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['contactus'])) active @endif">
                         <a href="/contactus">contact Us</a>
                      </li>
                      @endif
-                     @if(auth::check())
+                     @if(Auth::check())
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['about'])) active @endif">
                         <a href="/home/about">about Us</a>
                      </li>
                      @endif
-                     @if(!auth::check())
+                     @if(!Auth::check())
                      <li class="@if(Illuminate\Support\Str::contains(Request::url(), ['about'])) active @endif">
                         <a href="/about">about Us</a>
                      </li>
@@ -308,7 +312,7 @@
                   </ul>
                   <div class="cart-block position-relative text-right ml-auto">
                      
-                     @if(!auth::check())
+                     @if(!Auth::check())
                         <a href="#">
                            <span class="position-relative">
                               <i class="ion-bag"></i>
@@ -317,7 +321,7 @@
                            <span class="cart-total-price">₱ {{ number_format(\App\Models\GuestCart::where('guest_id', request()->cookie('purehappilife_session') )->sum('total_price')) }}</span>
                         </a>
                      @endif
-                     @if(auth::check())
+                     @if(Auth::check())
                         <a href="#">
                            <span class="position-relative">
                               <i class="ion-bag"></i>
