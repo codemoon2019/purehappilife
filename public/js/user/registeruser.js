@@ -127,11 +127,12 @@ $(document).on('click', '.btn-register-user', function (e) {
         mobilePhone: $('#txtMobilePhone').val(),
         password: $('#txtPassword').val(),
         retypePassword: $('#txtRetypePassword').val(),
+        usertype: $('#txtUserType').val(),
         ref_link: $('#txtRefLink').val()
       },
       beforeSend: function beforeSend() {
         Swal.fire({
-          text: 'Please wait while registering your account in Pure Happilife ...',
+          text: 'Please wait while registering your account in Cartsy Gallery ...',
           allowOutsideClick: false,
           showConfirmButton: false,
           willOpen: function willOpen() {
@@ -196,7 +197,7 @@ $(document).on('click', '.btn-continue-authentication', function (e) {
         var _Swal$fire;
 
         Swal.fire((_Swal$fire = {
-          text: 'Please wait while registering your account in Pure Happilife ...',
+          text: 'Please wait while registering your account in Cartsy Gallery ...',
           allowOutsideClick: false,
           showConfirmButton: false
         }, _defineProperty(_Swal$fire, "showConfirmButton", false), _defineProperty(_Swal$fire, "willOpen", function willOpen() {

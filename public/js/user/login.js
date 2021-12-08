@@ -94,6 +94,8 @@
 /***/ (function(module, exports) {
 
 var submit = false;
+
+
 $(document).on('click', '.btn-login', function (e) {
   e.preventDefault();
   submit = true;
@@ -109,7 +111,7 @@ $(document).on('click', '.btn-login', function (e) {
       },
       beforeSend: function beforeSend() {
         Swal.fire({
-          text: 'Please wait while registering your account in Pure Happilife ...',
+          text: 'Please wait while registering your account in Cartsy Gallery ...',
           allowOutsideClick: false,
           showConfirmButton: false,
           willOpen: function willOpen() {

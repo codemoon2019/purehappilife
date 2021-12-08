@@ -49,7 +49,7 @@
                         <div class="single-contact-block">
                             <h4><i class="fas fa-envelope"></i> Email</h4>
                             <p>
-                                <a href="mailto:yourmail@domain.com">cs@purehappilife.ph</a>
+                                <a href="mailto:yourmail@domain.com">cs@cartsygallery.ph</a>
                             </p>
                         </div>
 

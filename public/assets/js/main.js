@@ -726,7 +726,50 @@
 
             }
         });
-    
+
+    })
+
+    $(document).on('click', '.btn-add-to-cart-single', function(){
+        console.log('sample')
+        $.ajaxSetup({
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        $.ajax({
+            url: $('meta[name="app_url"]').attr('content')+"/shop/add-single-product",
+            method:'POST',
+            data:{
+                'dataID': this.id,
+                'quantity': $('#txtQuantity').val(),
+            },
+            beforeSend:function(){
+                
+                Swal.fire({
+                    html: 'Please wait while adding to cart ...',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                      Swal.showLoading()
+                    },
+                });
+
+            },
+            success:function(data){
+
+                $('#total-wishlist').text('('+data.total_wishlist_item+')');
+                $('.cart-total-price').text('₱ '+data.total_cart_price+'');
+                $('.total-cart-item').text(data.total_cart_item);
+
+                Swal.fire({
+                    icon: data.success == true ? 'success' : 'warning',
+                    text: data.messages,
+                });
+                
+                getCartItem()
+
+            }
+        });
 
     })
     

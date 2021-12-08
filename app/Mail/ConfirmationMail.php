@@ -30,6 +30,6 @@ class ConfirmationMail extends Mailable
      */
     public function build()
     {
-        return $this->from('no-reply@purehappilife.ph')->markdown('emails.confirmation')->with(['email_data' => $this->email_data]);
+        return $this->from('no-reply@cartsygallery.ph')->markdown('emails.confirmation')->with(['email_data' => $this->email_data]);
     }
 }

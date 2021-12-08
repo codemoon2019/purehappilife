@@ -21,7 +21,7 @@ Route::group(['middleware' => 'checksession'], function (){
     Route::get('/test', [App\Http\Controllers\Home\HomeController::class, 'testMail']);
     Route::get('/', [App\Http\Controllers\Home\HomeController::class, 'index'])->name('home-guest');
     Route::get('/login', [App\Http\Controllers\Home\HomeController::class, 'login'])->name('login');
-    Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+    Route::get('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout']);
     Route::get('/register', [App\Http\Controllers\Home\HomeController::class, 'register'])->name('register');
     Route::get('/shop', [App\Http\Controllers\Home\HomeController::class, 'shop'])->name('shop-guest');
     Route::get('/blog', [App\Http\Controllers\Home\HomeController::class, 'blog'])->name('blog-guest');
@@ -36,6 +36,7 @@ Route::group(['middleware' => 'checksession'], function (){
     Route::post('/send-email', [App\Http\Controllers\Home\HomeController::class, 'sendEmail'])->name('send-email');
     Route::get('/single-blog/{id}', [App\Http\Controllers\Home\HomeController::class, 'singleBlog'])->name('single-blog');
     Route::post('/signup-email', [App\Http\Controllers\Home\HomeController::class, 'signupEmail'])->name('signup-email');
+    Route::post('/reload-captcha', [App\Http\Controllers\Home\HomeController::class,'reloadCaptcha'])->name('reload-captcha');
 
     Route::get('/cart', [App\Http\Controllers\Home\HomeController::class, 'cart'])->name('cart');
     Route::get('/wishlist', [App\Http\Controllers\Home\HomeController::class, 'wishlist'])->name('wishlist');
@@ -108,6 +109,9 @@ Route::group(['middleware' => 'auth'], function (){
         Route::post('/send-email', [App\Http\Controllers\Home\HomeController::class, 'sendEmail'])->name('send-email');
         Route::post('/signup-email', [App\Http\Controllers\Home\HomeController::class, 'signupEmail'])->name('signup-email');
         Route::get('/product-info/{id}', [App\Http\Controllers\Home\ProductController::class, 'productInfo'])->name('product-info');
+        Route::post('/artist-create-product', [App\Http\Controllers\Home\ProductController::class, 'artistCreateProduct'])->name('artist-create-product');
+        Route::post('/create-website-blog', [App\Http\Controllers\Home\ProductController::class, 'createWebsiteBlog'])->name('create-website-blog');
+        
     
     });
 

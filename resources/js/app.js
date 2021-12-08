@@ -1,5 +1,5 @@
 
-/*const clientKey = 'pub.v2.8016052800121276.aHR0cDovLzEyNy4wLjAuMTo5MDkw.mAizqOx6DiMIPhcQyADxFCzWcBHlhNyCzJQo0EObKO0';
+const clientKey = 'pub.v2.8016052800121276.aHR0cDovLzEyNy4wLjAuMTo5MDkw.mAizqOx6DiMIPhcQyADxFCzWcBHlhNyCzJQo0EObKO0';
 const type = document.getElementById("type").innerHTML;
 
 async function initCheckout() {
@@ -94,4 +94,4 @@ function handleServerResponse(res, component) {
   }
 }
 
-initCheckout(); */
+initCheckout();

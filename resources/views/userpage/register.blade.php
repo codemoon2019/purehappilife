@@ -51,18 +51,25 @@
                         <div class="row">
                             <input type="text" id="txtRefLink" style="display:none;" value="{{ Request::get('ref_link') != null ? Request::get('ref_link') : '' }}">
                             <div class="col-lg-4">
+                                <label for="staticEmail">Are you a ? </label>
+                                <select class="form-control" id="txtUserType">
+                                    <option>Customer</option>
+                                    <option>Artist</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-4">
                                 <label for="staticEmail">First Name: </label>
-                                <input type="email" class="form-control validate-field" error-message="First name is required" id="txtFirstName">
+                                <input type="text" class="form-control validate-field" error-message="First name is required" id="txtFirstName">
                                 <span class="error-message text-center"></span>
                             </div>
                             <div class="col-lg-4">
                                 <label for="staticEmail">Last Name: </label>
-                                <input type="email" class="form-control validate-field" error-message="Last name is required" id="txtLastName">
+                                <input type="text" class="form-control validate-field" error-message="Last name is required" id="txtLastName">
                                 <span class="error-message text-center"></span>
                             </div>
                             <div class="col-lg-4">
                                 <label for="staticEmail">Middle Name: </label>
-                                <input type="email" class="form-control validate-field" error-message="Middle name is required" id="txtMiddleName">
+                                <input type="text" class="form-control validate-field" error-message="Middle name is required" id="txtMiddleName">
                                 <span class="error-message text-center"></span>
                             </div>
                         </div>

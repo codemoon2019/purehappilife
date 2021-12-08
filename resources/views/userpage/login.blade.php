@@ -35,12 +35,25 @@
                                 <div class="input-group mb-2 mr-sm-2">
                                     <input type="password" class="form-control validate-field" error-message="Please input your password" id="txtPassword">
                                     <div class="input-group-prepend">
-                                        <button type="button" class="input-group-text btn-dark3 show-password">show</button>
+                                        <button type="button" class="input-group-text btn-dark3 show-password" onclick=" togglePassword() " id="btnLogin">show</button>
                                     </div>
                                 </div>
                                 <span class="error-message text-center"></span>
                             </div>
                         </div>
+                        
+                        <div class="col-lg-8 offset-lg-2">
+                            <div class="captcha">
+                                <span>{!! captcha_img() !!}</span>
+                                <button type="button" class="btn btn-danger" class="reload" id="reload">
+                                    &#x21bb;
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 offset-lg-2">
+                            <input id="captcha" type="text" class="form-control" placeholder="Enter Captcha" name="captcha">
+                        </div>
+
                         <div class="form-group row pb-3 text-center">
                             <div class="col-md-6 offset-md-3">
                                 <div class="login-form-links">
@@ -65,3 +78,18 @@
     </div>
 @include('incs.footer')
 <script src="{{ config('app.cdn') . '/js/user/login.js' . '?v=' . config('app.version') }}"></script>
+<script>
+
+function togglePassword() {
+    var x = document.getElementById("txtPassword");
+    var btn = document.getElementById("btnLogin");
+    if (x.type === "password") {
+        x.type = "text";
+        btn.textContent = "Hide";
+    } else {
+        x.type = "password";
+        btn.textContent = "Show";
+    }
+}
+
+</script>

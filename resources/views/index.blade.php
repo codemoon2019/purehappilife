@@ -131,7 +131,7 @@
                <div class="col-sm-10 col-md-9 col-lg-5 col-xl-5">
                   <div class="section-title pb-4 pb-md-4 position-relative">
                      <h2 class="title">New Arrivals</h2>
-                     <p class="text">Here are the featured products of Pure Happilife PH.</p>
+                     <p class="text">Here are the featured products of Cartsy Gallery PH.</p>
                   </div>
                </div>
             </div>
@@ -155,11 +155,20 @@
                                     @if(auth::check())
                                           <a href="/home/product-info/{{ $product->id }}">
                                     @endif
-                                       @if($product->product_image_url != 'no-path')
-                                          <img class="first-img" src="{{ config('app.api_url') }}{{ $product->product_image_url }}" style="width: 250px; height: 250px;" alt="thumbnail">
-                                       @endif
-                                       @if($product->product_image_url == 'no-path')
-                                          <img class="first-img" src="{{ config('app.url') }}/assets/img/no-image.png" alt="thumbnail">
+                                       @if($product->user_type == null)
+                                          @if($product->product_image_url != 'no-path')
+                                             <img class="first-img" src="{{ config('app.api_url') }}{{ $product->product_image_url }}" style="width: 250px; height: 250px;" alt="thumbnail">
+                                          @endif
+                                          @if($product->product_image_url == 'no-path')
+                                             <img class="first-img" src="{{ config('app.url') }}/assets/img/no-image.png" alt="thumbnail">
+                                          @endif
+                                       @else
+                                          @if($product->product_image_url != 'no-path')
+                                             <img class="first-img" src="{{ $product->product_image_url }}" style="width: 250px; height: 250px;" alt="thumbnail">
+                                          @endif
+                                          @if($product->product_image_url == 'no-path')
+                                             <img class="first-img" src="/assets/img/no-image.png" alt="thumbnail">
+                                          @endif
                                        @endif
                                     </a>
                                     <ul class="product-links d-flex justify-content-center">
@@ -248,7 +257,7 @@
                                        <p>No ratings yet</p>
                                     @endif
                                     <h6 class="product-price">₱ {{ number_format($product->product_price) }}</h6>
-                                    <button class="pro-btn {{ auth::check() ? 'btn-add' : 'btn-add-to-cart-disabled' }}" data-id="{{ $product->id }}" action-type="cart">add to cart <i
+                                    <button style="width:100%;" class="pro-btn {{ auth::check() ? 'btn-add' : 'btn-add-to-cart-disabled' }}" data-id="{{ $product->id }}" action-type="cart">add to cart <i
                                           class="ion-bag"></i></button>
                                  </div>
                               </div>

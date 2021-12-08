@@ -21,7 +21,7 @@ $(document).on('click', '.btn-register-user', function(e){
             },
             beforeSend:function(){
                 Swal.fire({
-                    text: 'Please wait while registering your account in Pure Happilife ...',
+                    text: 'Please wait while registering your account in Cartsy Gallery ...',
                     allowOutsideClick: false,
                     showConfirmButton: false,
                     willOpen: () => {
@@ -84,7 +84,7 @@ $(document).on('click', '.btn-continue-authentication', function(e){
             },
             beforeSend:function(){
                 Swal.fire({
-                    text: 'Please wait while registering your account in Pure Happilife ...',
+                    text: 'Please wait while registering your account in Cartsy Gallery ...',
                     allowOutsideClick: false,
                     showConfirmButton: false,
                     showConfirmButton:false,

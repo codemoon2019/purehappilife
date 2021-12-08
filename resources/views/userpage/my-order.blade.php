@@ -446,7 +446,7 @@
             },
             beforeSend:function(){
                 Swal.fire({
-                    text: 'Please wait while registering your account in Pure Happilife ...',
+                    text: 'Please wait while registering your account in Cartsy Gallery ...',
                     allowOutsideClick: false,
                     showConfirmButton: false,
                     willOpen: () => {

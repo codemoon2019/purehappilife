@@ -63,7 +63,7 @@
                            <i class="ion-ios-email-outline"></i>
                         </span>
                         <div class="media-body">
-                           <h4 class="title"><a href="mailto:HasThemes.com">cs@purehappilife.ph</a></h4>
+                           <h4 class="title"><a href="mailto:HasThemes.com">cs@cartsygallery.ph</a></h4>
                            <p class="text">Orders Support!</p>
                         </div>
                      </div>
@@ -153,7 +153,7 @@
             <div class="row">
                <div class="col-12 col-md-6">
                   <div class="text-center text-md-left">
-                     <p class="mb-3 mb-md-0">Copyright &copy; <a href="https://hasthemes.com/">Pure Happilife</a>. All Rights
+                     <p class="mb-3 mb-md-0">Copyright &copy; <a href="https://hasthemes.com/">Cartsy Gallery</a>. All Rights
                         Reserved</p>
                   </div>
                </div>
